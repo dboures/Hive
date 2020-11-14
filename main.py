@@ -7,12 +7,12 @@ import numpy as np
 pg.init()
 
 #Create the screen
-screen_width, screen_height = 800, 800 # TODO: Autosense window??
-screen = pg.display.set_mode((screen_width, screen_height))
+WIDTH, HEIGHT = 800, 800 # TODO: Autosense window??
+screen = pg.display.set_mode((WIDTH, HEIGHT))
 # Background
 
 background = pg.Surface(screen.get_size())
-background.fill((250, 250, 250))
+background.fill((250, 1, 1))
 
 #Title and Icon
 pg.display.set_caption("Hive")
@@ -26,12 +26,24 @@ class Tile:
         self.coords = coord_pair
         self.side = radius
         self.outer = get_hex_points(coord_pair, radius)
-        self.inner = get_hex_points(coord_pair, radius * 0.8)
+        #self.inner = get_hex_points(coord_pair, radius * 0.8) #maybe we don't need
 
-    def draw():
-        pass
-    #do I want a draw function? woud need to pass in a surface which seems undesirable
+    def draw_blank(self, surface):
+        pg.draw.polygon(surface, (250,250,250), tile.outer)
 
+    def draw_clicked(self, surface):
+        pg.draw.polygon(surface, (1,1,250), tile.outer)
+
+    def was_clicked(self, pos):
+        if distance(self.coords, pos) < self.side - 1:
+            return True
+        else:
+            return False
+
+def distance(pair_one, pair_two):
+    x1,y1 = pair_one
+    x2,y2 = pair_two
+    return np.sqrt( ((x1- x2)* (x1 - x2)) + ((y1- y2)* (y1 - y2)) )
 
 
 def get_hex_points(coord_pair, side):
@@ -48,18 +60,17 @@ def get_hex_points(coord_pair, side):
 
 
 running = True
-#Initialize grid -- have to make this stuff standardized/scalabe? probably use a tile size variable at the beginning
-dist = 20
-tiles = [Tile((10,860), 20)] #(0 + a/2, y - a)
-for y in range (820, 0, -40):
-    for x in range(0, 820, 40):
-        if y % 80 != 0:
-            tiles.append(Tile((x, y), 20))
+#Initialize grid
+hex_radius = 20 # move this somewhere?
+y_range = list(range(HEIGHT + hex_radius, 0, -2 * (hex_radius) + 6)) #How is this 6 determined?
+odd_y = y_range[1::2]
+tiles = []
+for y in y_range:
+    for x in range(0, WIDTH + hex_radius, 2 * hex_radius): #consider putting this into a range as well?
+        if y in odd_y:
+            tiles.append(Tile((x + hex_radius, y), hex_radius + 1))
         else: 
-            tiles.append(Tile((x + 20, y), 20))
-
-
-
+            tiles.append(Tile((x, y), hex_radius + 1))
 
 
 
@@ -69,15 +80,22 @@ while running:
             running = False
         if event.type == pg.MOUSEBUTTONDOWN:
             if pg.mouse.get_pressed()[0]:
-                # draw the whole grid each time, but only when someone clicks?
+                click_pos = pg.mouse.get_pos()
+                print(click_pos)
+                # how do we draw the grid the first time
                 for tile in tiles:
-                    pg.draw.polygon(background, (255,1,1), tile.outer) # get_hex_points(pos, 20)
-                    pg.draw.polygon(background, (250,250,250), tile.inner) # get_hex_points(pos, 16) 
-                pos = pg.mouse.get_pos()
+                    if tile.was_clicked(click_pos):
+                        tile.draw_clicked(background)
+                    else:
+                        tile.draw_blank(background)
+
+                
+                    
+                
                 #TODO: create hex and get position to print what hex we are in
                 #Use axial coords
-                pg.draw.circle(background, (250,1,1), (400,400), 3)
-                print(pos)
+                pg.draw.circle(background, (1,250,1), (400,400), 6)
+                
 
     screen.blit(background, (0, 0))
     pg.display.update()
