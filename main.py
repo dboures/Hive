@@ -1,4 +1,5 @@
 import pygame as pg
+import numpy as np
 
 #https://www.redblobgames.com/grids/hexagons/
 
@@ -6,7 +7,7 @@ import pygame as pg
 pg.init()
 
 #Create the screen
-screen_width, screen_height = 800, 600 # TODO: Autosense window??
+screen_width, screen_height = 800, 800 # TODO: Autosense window??
 screen = pg.display.set_mode((screen_width, screen_height))
 # Background
 
@@ -15,26 +16,23 @@ background.fill((250, 250, 250))
 
 #Title and Icon
 pg.display.set_caption("Hive")
-#TODO: Icon not working on Ubuntu??
+#TODO: Icon not working on Ubuntu?? It works on windows though
 icon = pg.image.load('icon.png')
 pg.display.set_icon(icon)
 
-#pg.draw.polygon()
+
 
 def get_hex_points(coord_pair, side):
     x,y = coord_pair
-    #top
-    (x, y + side)
-    #TL
-    (x - side, y)
-    #TR
-    # bottom
-    (x, y - side)
-    #BL
-    #BR
-    print(y)
 
-get_hex_points((5,2))
+    return ( # has to be in a certain order i guess?
+    (x, y + side), # top
+    (x - ((side * np.sqrt(3))/2), y + (side / 2)), # top-left
+    (x - ((side * np.sqrt(3))/2), y - (side / 2)), # bottom-left
+    (x, y - side), # bottom
+    (x + ((side * np.sqrt(3))/2), y - (side / 2)), # bottom-right
+    (x + ((side * np.sqrt(3))/2), y + (side / 2)) # top-right
+    )
 
 running = True
 while running:
@@ -46,7 +44,8 @@ while running:
                 pos = pg.mouse.get_pos()
                 #TODO: create hex and get position to print what hex we are in
                 #Use axial coords
-                pg.draw.polygon(background, (255,1,1), ((146, 0), (291, 106), (236, 277), (56, 277), (0, 106)))
+                pg.draw.polygon(background, (255,1,1), get_hex_points(pos, 20))
+                pg.draw.polygon(background, (250,250,250), get_hex_points(pos, 16))
                 print(pos)
 
     screen.blit(background, (0, 0))
