@@ -1,6 +1,7 @@
 import pygame as pg
 import numpy as np
 from helper import Tile
+from start_menu import start_menu
 
 #https://www.redblobgames.com/grids/hexagons/
 
@@ -38,26 +39,37 @@ for y in y_range:
 
 #menu stuff here
 
-running = True
-while running:
-    for event in pg.event.get():        
-        if event.type == pg.QUIT:
-            running = False
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if pg.mouse.get_pressed()[0]:
-                click_pos = pg.mouse.get_pos()
-                print(click_pos)
-                # how do we draw the grid the first time
-                for tile in tiles:
-                    if tile.was_clicked(click_pos):
-                        tile.draw_clicked(background)
-                    else:
-                        tile.draw_blank(background)
+#https://stackoverflow.com/questions/51580173/how-to-implement-button-interaction-for-main-menu-pygame
 
-                
-                #TODO: create hex and get position to print what hex we are in
-                #Use axial coords
-                pg.draw.circle(background, (1,250,1), (450,450), 6)
+
+
+start_menu(screen)
+game_loop()
+
+
+
+def game_loop():
+    running = True
+    while running:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                running = False
+            else:        
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if pg.mouse.get_pressed()[0]:
+                        click_pos = pg.mouse.get_pos()
+                        print(click_pos)
+                        # how do we draw the grid the first time
+                        for tile in tiles:
+                            if tile.was_clicked(click_pos):
+                                tile.draw_clicked(background)
+                            else:
+                                tile.draw_blank(background)
+
+                        
+                        #TODO: create hex and get position to print what hex we are in
+                        #Use axial coords
+                        pg.draw.circle(background, (1,250,1), (450,450), 6)
                 
 
     screen.blit(background, (0, 0))
