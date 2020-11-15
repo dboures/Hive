@@ -7,7 +7,7 @@ import numpy as np
 pg.init()
 
 #Create the screen
-WIDTH, HEIGHT = 800, 800 # TODO: Autosense window??
+WIDTH, HEIGHT = 900, 900 # TODO: Autosense window??
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 # Background
 
@@ -94,7 +94,7 @@ while running:
                 
                 #TODO: create hex and get position to print what hex we are in
                 #Use axial coords
-                pg.draw.circle(background, (1,250,1), (400,400), 6)
+                pg.draw.circle(background, (1,250,1), (450,450), 6)
                 
 
     screen.blit(background, (0, 0))
