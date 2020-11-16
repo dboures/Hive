@@ -1,15 +1,16 @@
 import pygame as pg
 import numpy as np
-from helper import Tile
+from tile import Tile, initialize_grid
 from start_menu import start_menu
+from game_state import Game_State
 
-#https://www.redblobgames.com/grids/hexagons/
+# https://www.redblobgames.com/grids/hexagons/
 
-#Inititalize the pygame
+# Inititalize the pygame
 pg.init()
 
-#Create the screen
-WIDTH, HEIGHT = 900, 900 # TODO: Autosense window??
+# Create the screen
+WIDTH, HEIGHT = 900, 900  # TODO: Autosense window??
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 
 # Background
@@ -18,59 +19,45 @@ background.fill((250, 1, 1))
 
 #Title and Icon
 pg.display.set_caption("Hive")
-#TODO: Icon not working on Ubuntu?? It works on windows though
+# TODO: Icon not working on Ubuntu?? It works on windows though
 icon = pg.image.load('icon.png')
 pg.display.set_icon(icon)
 
+tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
 
-#Initialize grid
-hex_radius = 20 # move this somewhere?
-y_range = list(range(HEIGHT + hex_radius, 0, -2 * (hex_radius) + 6)) #How is this 6 determined?
-x_range = list(range(0, WIDTH + hex_radius, 2 * hex_radius))
-odd_y = y_range[1::2]
-tiles = []
-for y in y_range:
-    for x in x_range:
-        if y in odd_y:
-            tiles.append(Tile((x + hex_radius, y), hex_radius + 1))
-        else: 
-            tiles.append(Tile((x, y), hex_radius + 1))
+game_state = Game_State()
 
-
-#menu stuff here
-
-#https://stackoverflow.com/questions/51580173/how-to-implement-button-interaction-for-main-menu-pygame
-
-
-
-start_menu(screen)
-game_loop()
-
-
-
-def game_loop():
-    running = True
-    while running:
+while game_state.running:
+    while game_state.menu_loop:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                running = False
-            else:        
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    if pg.mouse.get_pressed()[0]:
-                        click_pos = pg.mouse.get_pos()
-                        print(click_pos)
-                        # how do we draw the grid the first time
-                        for tile in tiles:
-                            if tile.was_clicked(click_pos):
-                                tile.draw_clicked(background)
-                            else:
-                                tile.draw_blank(background)
+                game_state.quit()
+                break
+            else:
+                # how can this reach up to the global variable?
+                start_menu(screen, game_state, event)
 
-                        
-                        #TODO: create hex and get position to print what hex we are in
-                        #Use axial coords
-                        pg.draw.circle(background, (1,250,1), (450,450), 6)
-                
+    while game_state.main_loop:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                game_state.quit()
+                break
+        else:
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if pg.mouse.get_pressed()[0]:
+                    click_pos = pg.mouse.get_pos()
+                    print(click_pos)
+                    # how do we draw the grid the first time
+                    for tile in tiles:
+                        if tile.was_clicked(click_pos):
+                            tile.draw_clicked(background)
+                        else:
+                            tile.draw_blank(background)
 
-    screen.blit(background, (0, 0))
-    pg.display.update()
+                    # TODO: create hex and get position to print what hex we are in
+                    # Use axial coords
+                    pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
+                    # pg.display.flip()
+
+        screen.blit(background, (0, 0))
+        pg.display.update()
