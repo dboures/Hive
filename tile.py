@@ -5,25 +5,42 @@ import pygame as pg
 class Tile:
     def __init__(self, coord_pair, radius):
         self.coords = coord_pair
-        self.side = radius
+        self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
-        self.hex_border = get_hex_points(coord_pair, radius * 1.1) #maybe we don't need
+        self.hex_select = get_hex_points(coord_pair, radius * 1.1)
+        self.piece = None
 
     def draw_blank(self, surface):
-        pg.draw.polygon(surface, (250, 250, 250), self.hex)
+        if self.piece:
+            pass
+        else:
+            pg.draw.polygon(surface, (250, 250, 250), self.hex)
 
     def draw_clicked(self, surface):
-        pg.draw.polygon(surface, (250, 1, 1), self.hex)
+        if self.piece:
+            pass
+        else:
+            pg.draw.polygon(surface, (250, 1, 1), self.hex)
 
     def under_mouse(self, pos):
-        if distance(self.coords, pos) < self.side - 1:
+        if distance(self.coords, pos) < self.radius - 1:
             return True
         else:
             return False
 
     def draw_selected(self, surface):
-            pg.draw.polygon(surface, (250, 1, 1), self.hex_border)
-            pg.draw.polygon(surface, (250, 250, 250), self.hex)
+            pg.draw.polygon(surface, (250, 1, 1), self.hex_select)
+            if self.piece:
+                pass
+            else:
+                pg.draw.polygon(surface, (250, 250, 250), self.hex)
+
+
+    def place_piece(self, piece):
+        self.piece = piece
+    
+    def remove_piece(self):
+        self.piece = None
 
 
 
@@ -34,16 +51,16 @@ def distance(pair_one, pair_two):
     return np.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)))
 
 
-def get_hex_points(coord_pair, side):
+def get_hex_points(coord_pair, radius):
     x, y = coord_pair
 
     return (  # has to be in a certain order i guess?
-        (x, y + side),  # top
-        (x - ((side * np.sqrt(3))/2), y + (side / 2)),  # top-left
-        (x - ((side * np.sqrt(3))/2), y - (side / 2)),  # bottom-left
-        (x, y - side),  # bottom
-        (x + ((side * np.sqrt(3))/2), y - (side / 2)),  # bottom-right
-        (x + ((side * np.sqrt(3))/2), y + (side / 2))  # top-right
+        (x, y + radius),  # top
+        (x - ((radius * np.sqrt(3))/2), y + (radius / 2)),  # top-left
+        (x - ((radius * np.sqrt(3))/2), y - (radius / 2)),  # bottom-left
+        (x, y - radius),  # bottom
+        (x + ((radius * np.sqrt(3))/2), y - (radius / 2)),  # bottom-right
+        (x + ((radius * np.sqrt(3))/2), y + (radius / 2))  # top-right
     )
 
 

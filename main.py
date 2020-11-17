@@ -28,6 +28,8 @@ tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
 
 game_state = Game_State()
 
+queen = pg.image.load('images/Queen.png')
+
 while game_state.running:
     while game_state.menu_loop:
         for event in pg.event.get():
@@ -47,11 +49,9 @@ while game_state.running:
             tile.draw_blank(background)
         if event.type == pg.MOUSEBUTTONDOWN:
             if pg.mouse.get_pressed()[0]:
-                # how do we draw the grid the first time
                 for tile in tiles:
                     if tile.under_mouse(pos):
                         tile.draw_clicked(background)
-                        #update only the one tile?
         elif event.type == pg.MOUSEMOTION:
             for tile in tiles:
                     if tile.under_mouse(pos):
@@ -59,6 +59,6 @@ while game_state.running:
                         
 
         pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
-
+        background.blit(queen, (450, 450))
         screen.blit(background, (0, 0))
         pg.display.flip()
