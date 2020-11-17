@@ -6,20 +6,26 @@ class Tile:
     def __init__(self, coord_pair, radius):
         self.coords = coord_pair
         self.side = radius
-        self.outer = get_hex_points(coord_pair, radius)
-        # self.inner = get_hex_points(coord_pair, radius * 0.8) #maybe we don't need
+        self.hex = get_hex_points(coord_pair, radius)
+        self.hex_border = get_hex_points(coord_pair, radius * 1.1) #maybe we don't need
 
     def draw_blank(self, surface):
-        pg.draw.polygon(surface, (250, 250, 250), self.outer)
+        pg.draw.polygon(surface, (250, 250, 250), self.hex)
 
     def draw_clicked(self, surface):
-        pg.draw.polygon(surface, (1, 1, 250), self.outer)
+        pg.draw.polygon(surface, (250, 1, 1), self.hex)
 
-    def was_clicked(self, pos):
+    def under_mouse(self, pos):
         if distance(self.coords, pos) < self.side - 1:
             return True
         else:
             return False
+
+    def draw_selected(self, surface):
+            pg.draw.polygon(surface, (250, 1, 1), self.hex_border)
+            pg.draw.polygon(surface, (250, 250, 250), self.hex)
+
+
 
 
 def distance(pair_one, pair_two):

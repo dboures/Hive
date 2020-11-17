@@ -5,6 +5,7 @@ from start_menu import start_menu
 from game_state import Game_State
 
 # https://www.redblobgames.com/grids/hexagons/
+#https://stackoverflow.com/questions/56984542/is-there-an-effiecient-way-of-making-a-function-to-drag-and-drop-multiple-pngs
 
 # Inititalize the pygame
 pg.init()
@@ -15,7 +16,7 @@ screen = pg.display.set_mode((WIDTH, HEIGHT))
 
 # Background
 background = pg.Surface(screen.get_size())
-background.fill((250, 1, 1))
+background.fill((137, 137, 137))
 
 #Title and Icon
 pg.display.set_caption("Hive")
@@ -33,31 +34,31 @@ while game_state.running:
             if event.type == pg.QUIT:
                 game_state.quit()
                 break
-            else:
-                # how can this reach up to the global variable?
-                start_menu(screen, game_state, event)
+            start_menu(screen, game_state, event)
 
     while game_state.main_loop:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 game_state.quit()
                 break
-        else:
-            if event.type == pg.MOUSEBUTTONDOWN:
-                if pg.mouse.get_pressed()[0]:
-                    click_pos = pg.mouse.get_pos()
-                    print(click_pos)
-                    # how do we draw the grid the first time
-                    for tile in tiles:
-                        if tile.was_clicked(click_pos):
-                            tile.draw_clicked(background)
-                        else:
-                            tile.draw_blank(background)
+        pos = pg.mouse.get_pos()
+        background.fill((137, 137, 137))
+        for tile in tiles:
+            tile.draw_blank(background)
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if pg.mouse.get_pressed()[0]:
+                # how do we draw the grid the first time
+                for tile in tiles:
+                    if tile.under_mouse(pos):
+                        tile.draw_clicked(background)
+                        #update only the one tile?
+        elif event.type == pg.MOUSEMOTION:
+            for tile in tiles:
+                    if tile.under_mouse(pos):
+                        tile.draw_selected(background)
+                        
 
-                    # TODO: create hex and get position to print what hex we are in
-                    # Use axial coords
-                    pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
-                    # pg.display.flip()
+        pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
 
         screen.blit(background, (0, 0))
-        pg.display.update()
+        pg.display.flip()
