@@ -28,8 +28,6 @@ tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
 
 game_state = Game_State()
 
-queen = pg.image.load('images/Queen.png')
-
 while game_state.running:
     while game_state.menu_loop:
         for event in pg.event.get():
@@ -59,6 +57,5 @@ while game_state.running:
                         
 
         pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
-        background.blit(queen, (450, 450))
         screen.blit(background, (0, 0))
         pg.display.flip()

@@ -7,5 +7,6 @@ class Queen:
         self.image = pg.image.load('images/Queen.png')
 
     def draw(self, surface, hex_pos):
-        #transform center of hex into icon position? Queen icon is top left centered
+        x,y = hex_pos
+        pos = (x - 16, y - 14)
         surface.blit(self.image, pos)

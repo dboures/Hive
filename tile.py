@@ -1,5 +1,6 @@
 import numpy as np
 import pygame as pg
+from pieces import Queen
 
 
 class Tile:
@@ -8,17 +9,21 @@ class Tile:
         self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
-        self.piece = None
+        self.piece = Queen()
 
+
+    #Refactor all of these draw functions?
     def draw_blank(self, surface):
         if self.piece:
-            pass
+            pg.draw.polygon(surface, (250, 250, 250), self.hex)
+            self.piece.draw(surface, self.coords)
         else:
             pg.draw.polygon(surface, (250, 250, 250), self.hex)
 
     def draw_clicked(self, surface):
         if self.piece:
-            pass
+            pg.draw.polygon(surface, (250, 1, 1), self.hex)
+            self.piece.draw(surface, self.coords)
         else:
             pg.draw.polygon(surface, (250, 1, 1), self.hex)
 
@@ -29,9 +34,10 @@ class Tile:
             return False
 
     def draw_selected(self, surface):
-            pg.draw.polygon(surface, (250, 1, 1), self.hex_select)
+            pg.draw.polygon(surface, (250, 1, 1), self.hex_select) 
             if self.piece:
-                pass
+                pg.draw.polygon(surface, (250, 250, 250), self.hex)
+                self.piece.draw(surface, self.coords)
             else:
                 pg.draw.polygon(surface, (250, 250, 250), self.hex)
 
