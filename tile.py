@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from pieces import Queen, Grasshopper, Spider
+from pieces import Queen, Grasshopper, Spider, Beetle
 
 
 class Tile:
@@ -9,7 +9,7 @@ class Tile:
         self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
-        self.piece = Spider()
+        self.piece = Beetle()
 
 
     #Refactor all of these draw functions?
