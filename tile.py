@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from pieces import Queen, Grasshopper, Spider, Beetle
+from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 
 
 class Tile:
