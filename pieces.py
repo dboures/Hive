@@ -34,7 +34,8 @@ class Spider(Piece):
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
-        surface.blit(self.image, hex_pos)
+        pos = (x - 16, y - 17)
+        surface.blit(self.image, pos)
 
 class Beetle(Piece):
     def __init__(self):
