@@ -61,8 +61,9 @@ class Tile:
         self.color = WHITE
 
     def move_piece(self, new_tile):
-        new_tile.add_piece(self.piece)
-        self.remove_piece()
+        if new_tile is not None and new_tile.coords != self.coords:
+            new_tile.add_piece(self.piece)
+            self.remove_piece()
 
 
 def distance(pair_one, pair_two):

@@ -65,14 +65,18 @@ while game_state.running:
                 if event.key == pg.K_TAB:
                     old_tile = [x for x in tiles if x.piece is not None][0]
                     new_tile = tiles[np.random.randint(0, len(tiles))]
-
                     old_tile.move_piece(new_tile)
             if event.type == pg.MOUSEBUTTONDOWN:
                 clicked = True
             if event.type == pg.MOUSEBUTTONUP:
                 clicked = False
+                if moving_piece:
+                    old_tile = next(
+                        tile for tile in tiles if tile.piece == moving_piece)
+                    new_tile = next(
+                        (tile for tile in tiles if tile.under_mouse(pos)), None)
+                    old_tile.move_piece(new_tile)
                 moving_piece = None
-                # moving_piece = None? How do we put the piece down
 
         # only draw tiles once in a for loop
         background.fill((180, 180, 180))
@@ -81,13 +85,11 @@ while game_state.running:
                 tile.draw(background, pos, clicked)
                 if tile.under_mouse(pos) and moving_piece is None:
                     moving_piece = tile.piece
-                    print('moving')
             else:
                 tile.draw(background, pos)
         if game_state.inventory_open:
             inv_dark.draw_inventory(background)
         if moving_piece:
-            print('draw drag')
             draw_drag(background, pos, moving_piece)
         pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
         screen.blit(background, (0, 0))
