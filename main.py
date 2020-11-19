@@ -3,6 +3,9 @@ import numpy as np
 from tile import Tile, initialize_grid
 from start_menu import start_menu
 from game_state import Game_State
+from inventory import Inventory
+
+DARK = (137, 137, 137)
 
 # https://www.redblobgames.com/grids/hexagons/
 #https://stackoverflow.com/questions/56984542/is-there-an-effiecient-way-of-making-a-function-to-drag-and-drop-multiple-pngs
@@ -16,7 +19,7 @@ screen = pg.display.set_mode((WIDTH, HEIGHT))
 
 # Background
 background = pg.Surface(screen.get_size())
-background.fill((137, 137, 137))
+background.fill((0, 0, 0))
 
 #Title and Icon
 pg.display.set_caption("Hive")
@@ -28,6 +31,10 @@ tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
 
 game_state = Game_State()
 
+
+
+
+
 while game_state.running:
     while game_state.menu_loop:
         for event in pg.event.get():
@@ -37,12 +44,8 @@ while game_state.running:
             start_menu(screen, game_state, event)
 
     while game_state.main_loop:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                game_state.quit()
-                break
         pos = pg.mouse.get_pos()
-        background.fill((137, 137, 137))
+        background.fill((180, 180, 180))
         for tile in tiles:
             tile.draw_blank(background)
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -54,8 +57,18 @@ while game_state.running:
             for tile in tiles:
                     if tile.under_mouse(pos):
                         tile.draw_selected(background)
-                        
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                game_state.quit()
+                break
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    print('spacebar')
+                    inv = Inventory(DARK)
+                    inv.open_inventory(background) # this placement gets immediately overwritten later in the loop :(                        
 
         pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
+        # if inventory open:
+            #always draw the inventory
         screen.blit(background, (0, 0))
         pg.display.flip()

@@ -1,19 +1,22 @@
 import numpy as np
 import pygame as pg
 
+WHITE = (255, 255, 255)
+DARK = (137, 137, 137)
 
 class Piece:
-    def __init__(self):
+    def __init__(self, color=WHITE):
         self.image = pg.image.load('images/{}.png'.format(type(self).__name__))
         self.pos = None
+        self.color = color
         
     def getName(self):
         raise NotImplementedError #you want to override this on the child classes
 
 
-class Queen(Piece):
-    def __init__(self):
-        super().__init__()
+class Queen(Piece): # no valide
+    def __init__(self, color=WHITE):
+        super().__init__(color)
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
@@ -21,8 +24,8 @@ class Queen(Piece):
         surface.blit(self.image, pos)
 
 class Ant(Piece):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, color=WHITE):
+        super().__init__(color)
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
@@ -30,8 +33,8 @@ class Ant(Piece):
         surface.blit(self.image, pos)
 
 class Spider(Piece):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, color=WHITE):
+        super().__init__(color)
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
@@ -39,8 +42,8 @@ class Spider(Piece):
         surface.blit(self.image, pos)
 
 class Beetle(Piece):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, color=WHITE):
+        super().__init__(color)
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
@@ -48,8 +51,8 @@ class Beetle(Piece):
         surface.blit(self.image, pos)
 
 class Grasshopper(Piece):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, color=WHITE):
+        super().__init__(color)
 
     def draw(self, surface, hex_pos):
         x,y = hex_pos
