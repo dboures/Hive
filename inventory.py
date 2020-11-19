@@ -11,7 +11,7 @@ class Inventory:
 
 
 
-    def open_inventory(self, background):
+    def draw_inventory(self, background):
         WIDTH, HEIGHT = background.get_size()
         inventory_width = WIDTH / 4
         inventory_height = HEIGHT / 4

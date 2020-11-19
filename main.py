@@ -6,6 +6,7 @@ from game_state import Game_State
 from inventory import Inventory
 
 DARK = (137, 137, 137)
+WHITE = (255, 255, 255)
 
 # https://www.redblobgames.com/grids/hexagons/
 #https://stackoverflow.com/questions/56984542/is-there-an-effiecient-way-of-making-a-function-to-drag-and-drop-multiple-pngs
@@ -31,9 +32,8 @@ tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
 
 game_state = Game_State()
 
-
-
-
+inv_dark = Inventory(DARK)
+inv_white = Inventory(WHITE)
 
 while game_state.running:
     while game_state.menu_loop:
@@ -63,12 +63,10 @@ while game_state.running:
                 break
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    print('spacebar')
-                    inv = Inventory(DARK)
-                    inv.open_inventory(background) # this placement gets immediately overwritten later in the loop :(                        
+                    game_state.toggle_inventory()                      
 
         pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
-        # if inventory open:
-            #always draw the inventory
+        if game_state.inventory_open:
+            inv_dark.draw_inventory(background)
         screen.blit(background, (0, 0))
         pg.display.flip()
