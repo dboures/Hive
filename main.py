@@ -36,6 +36,7 @@ inv_dark = Inventory(DARK)
 inv_white = Inventory(WHITE)
 
 clicked = False
+have_piece = False
 
 while game_state.running:
     while game_state.menu_loop:
@@ -54,9 +55,17 @@ while game_state.running:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     game_state.toggle_inventory()
+                if event.key == pg.K_TAB:
+                    old_tile = [x for x in tiles if x.piece is not None][0]
+                    new_tile = tiles[np.random.randint(0,len(tiles))]
+
+                    old_tile.move_piece(new_tile)
+                    # get first tile with piece
+                    # move piece to random tile
+
+                    #
             if event.type == pg.MOUSEBUTTONDOWN:
-                if pg.mouse.get_pressed()[0]:
-                    clicked = True
+                clicked = True
             if event.type == pg.MOUSEBUTTONUP:
                 clicked = False
                     
@@ -64,30 +73,27 @@ while game_state.running:
         background.fill((180, 180, 180))
         for tile in tiles:
             tile.draw(background,pos,clicked)
-        pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
         if game_state.inventory_open:
             inv_dark.draw_inventory(background)
+        if have_piece:
+            draw_drag(background, )
+        pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
         screen.blit(background, (0, 0))
         pg.display.flip()
 
 
 
 
-def draw_drag(screen, board, selected_piece, font):
-    if selected_piece:
-        piece, x, y = get_square_under_mouse(board)
-        if x != None:
-            rect = (BOARD_POS[0] + x * TILESIZE, BOARD_POS[1] + y * TILESIZE, TILESIZE, TILESIZE)
-            pygame.draw.rect(screen, (0, 255, 0, 50), rect, 2)
+def draw_drag(background, pos, piece = None):
+    if piece:
 
         color, type = selected_piece[0]
-        s1 = font.render(type[0], True, pygame.Color(color))
-        s2 = font.render(type[0], True, pygame.Color('darkgrey'))
-        pos = pygame.Vector2(pygame.mouse.get_pos())
+
+        pos = pg.Vector2(pg.mouse.get_pos())
         screen.blit(s2, s2.get_rect(center=pos + (1, 1)))
         screen.blit(s1, s1.get_rect(center=pos))
         selected_rect = pygame.Rect(BOARD_POS[0] + selected_piece[1] * TILESIZE, BOARD_POS[1] + selected_piece[2] * TILESIZE, TILESIZE, TILESIZE)
-        pygame.draw.line(screen, pygame.Color('red'), selected_rect.center, pos)
+        pg.draw.line(screen, pygame.Color('red'), selected_rect.center, pos)
         return (x, y)
 
 

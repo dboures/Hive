@@ -20,7 +20,7 @@ class Inventory:
         rect = pg.Rect(WIDTH - inventory_width, HEIGHT - inventory_height, inventory_width, inventory_height)
 
 
-        #draw the inventory?
+        #still needs work
         pg.draw.rect(background, (1,1,1), rect)
 
         pg.display.flip()

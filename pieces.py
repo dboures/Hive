@@ -14,7 +14,7 @@ class Piece:
         raise NotImplementedError #you want to override this on the child classes
 
 
-class Queen(Piece): # no valide
+class Queen(Piece):
     def __init__(self, color=WHITE):
         super().__init__(color)
 
