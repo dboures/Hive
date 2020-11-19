@@ -6,6 +6,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DARK = (137, 137, 137)
 
+
 class Tile:
     def __init__(self, coord_pair, radius):
         self.coords = coord_pair
@@ -15,26 +16,24 @@ class Tile:
         self.color = WHITE
         self.piece = None
 
-        selector = np.random.randint(1,50)
+        selector = np.random.randint(1, 50)
         if selector == 1:
-            self.piece = Queen()
+            self.add_piece(Queen())
         elif selector == 2:
-            self.piece = Grasshopper()
+            self.add_piece(Grasshopper())
         elif selector == 3:
-            self.piece = Spider()
+            self.add_piece(Spider())
         elif selector == 4:
-            self.piece = Beetle()
+            self.add_piece(Beetle())
         elif selector == 5:
-            self.piece = Ant()
+            self.add_piece(Ant())
 
         # color = np.random.randint(1,3)
         # if color > 1:
         #     self.color = DARK
 
-        
-
     def draw(self, surface, pos, clicked=False):
-        #if mouse, determine select or click then draw
+        # if mouse, determine select or click then draw
         if self.under_mouse(pos):
             if clicked:
                 pg.draw.polygon(surface, (250, 1, 1), self.hex)
@@ -44,7 +43,7 @@ class Tile:
         else:
             pg.draw.polygon(surface, self.color, self.hex)
         if self.piece:
-            self.piece.draw(surface, self.coords) 
+            self.piece.draw(surface, self.coords)
 
     def under_mouse(self, pos):
         if distance(self.coords, pos) < self.radius - 1:
@@ -54,8 +53,9 @@ class Tile:
 
     def add_piece(self, piece):
         self.piece = piece
+        self.piece.update_pos(self.coords)
         self.color = piece.color
-    
+
     def remove_piece(self):
         self.piece = None
         self.color = WHITE
