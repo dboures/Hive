@@ -15,7 +15,7 @@ WHITE = (255, 255, 255)
 pg.init()
 
 # Create the screen
-WIDTH, HEIGHT = 900, 900  # TODO: Autosense window??
+WIDTH, HEIGHT = 884, 900  # TODO: Autosense window??
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 
 # Background
@@ -28,7 +28,7 @@ pg.display.set_caption("Hive")
 icon = pg.image.load('icon.png')
 pg.display.set_icon(icon)
 
-tiles = initialize_grid(HEIGHT, WIDTH, radius=20)
+tiles = initialize_grid(HEIGHT - 200, WIDTH, radius=20)
 
 game_state = Game_State()
 
@@ -60,12 +60,13 @@ while game_state.running:
                 game_state.quit()
                 break
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    game_state.toggle_inventory()
                 if event.key == pg.K_TAB:
                     old_tile = [x for x in tiles if x.piece is not None][0]
                     new_tile = tiles[np.random.randint(0, len(tiles))]
                     old_tile.move_piece(new_tile)
+                if event.key == pg.K_ESCAPE:
+                    game_state.quit()
+                    break
             if event.type == pg.MOUSEBUTTONDOWN:
                 clicked = True
             if event.type == pg.MOUSEBUTTONUP:
@@ -87,10 +88,11 @@ while game_state.running:
                     moving_piece = tile.piece
             else:
                 tile.draw(background, pos)
-        if game_state.inventory_open:
-            inv_dark.draw_inventory(background)
+        inv_dark.draw_inventory(background, (0,160))
+        inv_white.draw_inventory(background, (442, 160))
         if moving_piece:
             draw_drag(background, pos, moving_piece)
-        pg.draw.circle(background, (1, 250, 1), (450, 450), 6)
+        pg.draw.circle(background, (1, 250, 1), (442, 380), 6)
+        pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
         pg.display.flip()

@@ -8,13 +8,13 @@ DARK = (137, 137, 137)
 
 
 class Tile:
-    def __init__(self, coord_pair, radius):
+    def __init__(self, coord_pair, radius, piece=None):
         self.coords = coord_pair
         self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
         self.color = WHITE
-        self.piece = None
+        self.piece = piece
 
         selector = np.random.randint(1, 50)
         if selector == 1:
@@ -32,7 +32,7 @@ class Tile:
         # if color > 1:
         #     self.color = DARK
 
-    def draw(self, surface, pos, clicked=False):
+    def draw(self, surface, pos, clicked=False): # pos to None as default?
         # if mouse, determine select or click then draw
         if self.under_mouse(pos):
             if clicked:

@@ -14,8 +14,3 @@ class Game_State:
         self.menu_loop = False
         self.main_loop = False
 
-    def toggle_inventory(self):
-        if self.inventory_open:
-            self.inventory_open = False
-        else:
-            self.inventory_open = True
