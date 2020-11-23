@@ -1,4 +1,5 @@
 import pygame as pg
+import numpy as np
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 
 
@@ -35,25 +36,24 @@ class Inventory:
         pg.draw.rect(background, (1, 1, 1), back)
         pg.draw.rect(background, (55, 55, 55), inner)
 
+        title_height = inner_height/8
+        stock_height = inner_height * (7/8) #the remaining inventory space
         
-        title_rect = pg.Rect(inner_left, inner_top, inner_width, inner_height * (1/8))
-        # rect1 = pg.Rect(button_pos, (3/9) * HEIGHT, button_width, button_height)
-        # rect2 = pg.Rect(button_pos, (4/9) * HEIGHT, button_width, button_height)
-        # rect3 = pg.Rect(button_pos, (5/9) * HEIGHT, button_width, button_height)
-        # rect4 = pg.Rect(button_pos, (5/9) * HEIGHT, button_width, button_height)
-        # rect5 = pg.Rect(button_pos, (5/9) * HEIGHT, button_width, button_height)
 
-        FONT = pg.font.SysFont("Times New Norman", 25)
+        FONT = pg.font.SysFont("Times New Norman", 24)
         font = FONT.render('Player 1 Inventory', True, (255, 255, 255))
-        title_rect = font.get_rect(center=(inner_left + inner_width/2, inner_top + inner_height/9))
+        title_rect = font.get_rect(center=(inner_left + inner_width/2, inner_top + title_height/2))
+        rects = []
+        for i in range(0,5):
+            rects.append(pg.Rect(inner_left + (i * (inner_width/5)), inner_top + title_height, inner_width / 5, stock_height))
+
         pg.draw.rect(background, (55, 55, 55), title_rect)
         background.blit(font, title_rect)
 
-        # font = pg.font.SysFont("Times New Norman", 25)
-        # text = font.render("You win!", True, (255, 255, 255))
-        # text_rect = text.get_rect(center=(inner_left + inner_width/2, inner_top - inner_height/2))
-        # pg.draw.rect(background, (55, 55, 55), text_rect)
-        # background.blit(text, text_rect)
+        for rect in rects:
+            pg.draw.rect(background, (np.random.randint(250), np.random.randint(250), np.random.randint(250)), rect)
+            
 
+        background.blit(font, title_rect)
 
         pg.display.flip()
