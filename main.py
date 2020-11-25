@@ -32,8 +32,8 @@ tiles = initialize_grid(HEIGHT - 200, WIDTH, radius=20)
 
 game_state = Game_State()
 
-inv_dark = Inventory(DARK)
-inv_white = Inventory(WHITE)
+inv_white = Inventory(background, (0,160), white=True)
+inv_dark = Inventory(background, (440, 160), white=False)
 
 clicked = False
 moving_piece = None
@@ -64,6 +64,7 @@ while game_state.running:
                     old_tile = [x for x in tiles if x.piece is not None][0]
                     new_tile = tiles[np.random.randint(0, len(tiles))]
                     old_tile.move_piece(new_tile)
+                    print('rules')
                 if event.key == pg.K_ESCAPE:
                     game_state.quit()
                     break
@@ -88,8 +89,8 @@ while game_state.running:
                     moving_piece = tile.piece
             else:
                 tile.draw(background, pos)
-        inv_dark.draw_inventory(background, (0,160))
-        inv_white.draw_inventory(background, (440, 160))
+        inv_white.draw_inventory(background)
+        inv_dark.draw_inventory(background)
         if moving_piece:
             draw_drag(background, pos, moving_piece)
         pg.draw.circle(background, (1, 250, 1), (440, 380), 6)

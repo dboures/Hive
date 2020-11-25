@@ -1,59 +1,82 @@
 import pygame as pg
 import numpy as np
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
+from tile import Tile
+
+BLACK = (71, 71, 71)
+WHITE = (255, 255, 255)
+
+# white is on the left
 
 
 class Inventory:
-    def __init__(self, color):
-        self.color = color
-        self.Queen = [Queen(color)]
-        self.Beetles = [Beetle(color), Beetle(color)]
-        self.Grasshoppers = [Grasshopper(
-            color), Grasshopper(color), Grasshopper(color)]
-        self.Spiders = [Spider(color), Spider(color)]
-        self.Ants = [Ant(color), Ant(color), Ant(color)]
-
-    def draw_inventory(self, background, pos):
+    def __init__(self, background, pos, white=True):
         WIDTH, HEIGHT = background.get_size()
         left = pos[0]
         top = HEIGHT - pos[1]
+        self.white = white
 
-        #if self.color:
-        #draw that side
         inventory_width = WIDTH / 2
         inventory_height = 160
-        #print(WIDTH - inventory_width)
 
         inner_left = left + 5
         inner_top = top + 5
         inner_width = inventory_width - 10
         inner_height = inventory_height - 10
 
-        back = pg.Rect(left, top, inventory_width, inventory_height)
-        inner = pg.Rect(inner_left, inner_top, inner_width, inner_height)
-
-        # still needs work
-        pg.draw.rect(background, (1, 1, 1), back)
-        pg.draw.rect(background, (55, 55, 55), inner)
+        self.back_panel = pg.Rect(
+            left, top, inventory_width, inventory_height)
+        self.inner_panel = pg.Rect(
+            inner_left, inner_top, inner_width, inner_height)
 
         title_height = inner_height/8
-        stock_height = inner_height * (7/8) #the remaining inventory space
-        
+        stock_height = inner_height * (7/8)  # the remaining inventory space
+        stock_width = inner_width / 5
+
+        self.tile_rects = []
+        self.tiles = []
+        if white:
+            color = WHITE
+        else:
+            color = BLACK
+        for i in range(0, 5):
+            self.tile_rects.append(pg.Rect(inner_left + (i * stock_width) + 2, inner_top +
+                                 title_height + 2, stock_width - 4, stock_height - 4))
+            #if i == 0:
+            self.tiles.append([Tile(
+                (inner_left + (i * stock_width) + (stock_width / 2), inner_top + title_height + stock_height / 2)
+                ,radius=20, piece=Queen(WHITE))])
 
         FONT = pg.font.SysFont("Times New Norman", 24)
-        font = FONT.render('Player 1 Inventory', True, (255, 255, 255))
-        title_rect = font.get_rect(center=(inner_left + inner_width/2, inner_top + title_height/2))
-        rects = []
-        for i in range(0,5):
-            rects.append(pg.Rect(inner_left + (i * (inner_width/5)), inner_top + title_height, inner_width / 5, stock_height))
+        if self.white:
+            self.font = FONT.render('White (Player 1) Inventory', True, (255, 255, 255))
+        else:
+            self.font = FONT.render('Black (Player 2) Inventory', True, (255, 255, 255))
+        self.title_rect = self.font.get_rect(center=(
+            inner_left + inner_width/2, inner_top + title_height/2))
 
-        pg.draw.rect(background, (55, 55, 55), title_rect)
-        background.blit(font, title_rect)
+        # if white:  # should always know where they need to be
+        #     self.tiles = [[Tile(()), radius= 20, piece=Queen(WHITE)], [Beetle(WHITE), Beetle(WHITE)],
+        #                   [Grasshopper(WHITE), Grasshopper(
+        #                       WHITE), Grasshopper(WHITE)],
+        #                   [Spider(WHITE), Spider(WHITE)],  [Ant(WHITE), Ant(WHITE), Ant(WHITE)]]
+        # # else:
+        # #     self.tiles = [[Queen(BLACK)], [Beetle(BLACK), Beetle(BLACK)],
+        # #                   [Grasshopper(BLACK), Grasshopper(
+        # #                       BLACK), Grasshopper(BLACK)],
+        # #                   [Spider(BLACK), Spider(BLACK)],  [Ant(BLACK), Ant(BLACK), Ant(BLACK)]]
 
-        for rect in rects:
-            pg.draw.rect(background, (np.random.randint(250), np.random.randint(250), np.random.randint(250)), rect)
-            
+    def draw_inventory(self, background):
 
-        background.blit(font, title_rect)
+        # still needs work
+        pg.draw.rect(background, (1, 1, 1), self.back_panel)
+        pg.draw.rect(background, (55, 55, 55), self.inner_panel)
+        pg.draw.rect(background, (55, 55, 55), self.title_rect)
+        for i in range(0,len(self.tile_rects)):
+            print(i)
+            pg.draw.rect(background, (137, 137, 137), self.tile_rects[i])
+            for tile in self.tiles[i]:
+                tile.draw(background, tile.coords)#messy
 
+        background.blit(self.font, self.title_rect)
         pg.display.flip()

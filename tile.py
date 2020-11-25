@@ -65,6 +65,10 @@ class Tile:
             new_tile.add_piece(self.piece)
             self.remove_piece()
 
+    def set_coords_inventory(self, coord_pair):
+        self.coords = coord_pair
+
+
 
 def distance(pair_one, pair_two):
     x1, y1 = pair_one
@@ -75,7 +79,7 @@ def distance(pair_one, pair_two):
 def get_hex_points(coord_pair, radius):
     x, y = coord_pair
 
-    return (  # has to be in a certain order i guess?
+    return (  # has to be in counterclockwise order for drawing
         (x, y + radius),  # top
         (x - ((radius * np.sqrt(3))/2), y + (radius / 2)),  # top-left
         (x - ((radius * np.sqrt(3))/2), y - (radius / 2)),  # bottom-left
