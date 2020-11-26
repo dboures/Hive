@@ -66,17 +66,23 @@ class Inventory:
         # #                       BLACK), Grasshopper(BLACK)],
         # #                   [Spider(BLACK), Spider(BLACK)],  [Ant(BLACK), Ant(BLACK), Ant(BLACK)]]
 
-    def draw_inventory(self, background):
+    def draw_inventory(self, background, pos, clicked=False, moving_piece=None):
 
         # still needs work
         pg.draw.rect(background, (1, 1, 1), self.back_panel)
         pg.draw.rect(background, (55, 55, 55), self.inner_panel)
         pg.draw.rect(background, (55, 55, 55), self.title_rect)
         for i in range(0,len(self.tile_rects)):
-            print(i)
             pg.draw.rect(background, (137, 137, 137), self.tile_rects[i])
-            for tile in self.tiles[i]:
-                tile.draw(background, tile.coords)#messy
+            for tile in self.tiles[i]: 
+                # kind of feels like these tiles should be in the main tiles list
+                # not sure how to get these things to talk to each other though
+                if clicked:
+                    tile.draw(background, tile.coords, clicked)
+                    if tile.under_mouse(tile.coords) and moving_piece is None:
+                        moving_piece = tile.piece
+                else:
+                    tile.draw(background, tile.coords)#messy
 
         background.blit(self.font, self.title_rect)
         pg.display.flip()

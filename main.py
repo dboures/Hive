@@ -28,15 +28,11 @@ pg.display.set_caption("Hive")
 icon = pg.image.load('icon.png')
 pg.display.set_icon(icon)
 
-tiles = initialize_grid(HEIGHT - 200, WIDTH, radius=20)
-
-game_state = Game_State()
 
 inv_white = Inventory(background, (0,160), white=True)
 inv_dark = Inventory(background, (440, 160), white=False)
 
-clicked = False
-moving_piece = None
+gs = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
 
 
 def draw_drag(background, pos, piece=None):
@@ -45,54 +41,54 @@ def draw_drag(background, pos, piece=None):
     pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
 
 
-while game_state.running:
-    while game_state.menu_loop:
+while gs.running:
+    while gs.menu_loop:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                game_state.quit()
+                gs.quit()
                 break
-            start_menu(screen, game_state, event)
+            start_menu(screen, gs, event)
 
-    while game_state.main_loop:
+    while gs.main_loop:
         pos = pg.mouse.get_pos()
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                game_state.quit()
+                gs.quit()
                 break
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_TAB:
-                    old_tile = [x for x in tiles if x.piece is not None][0]
-                    new_tile = tiles[np.random.randint(0, len(tiles))]
+                    old_tile = [x for x in gs.board_tiles if x.piece is not None][0]
+                    new_tile = gs.board_tiles[np.random.randint(0, len(gs.board_tiles))]
                     old_tile.move_piece(new_tile)
                     print('rules')
                 if event.key == pg.K_ESCAPE:
-                    game_state.quit()
+                    gs.quit()
                     break
             if event.type == pg.MOUSEBUTTONDOWN:
                 clicked = True
             if event.type == pg.MOUSEBUTTONUP:
                 clicked = False
-                if moving_piece:
+                if gs.moving_piece:
                     old_tile = next(
-                        tile for tile in tiles if tile.piece == moving_piece)
+                        tile for tile in gs.board_tiles if tile.piece == gs.moving_piece)
                     new_tile = next(
-                        (tile for tile in tiles if tile.under_mouse(pos)), None)
+                        (tile for tile in gs.board_tiles if tile.under_mouse(pos)), None)
                     old_tile.move_piece(new_tile)
-                moving_piece = None
+                gs.moving_piece = None
 
         # only draw tiles once in a for loop
         background.fill((180, 180, 180))
-        for tile in tiles:
-            if clicked:
+        for tile in gs.board_tiles:
+            if gs.clicked:
                 tile.draw(background, pos, clicked)
-                if tile.under_mouse(pos) and moving_piece is None:
-                    moving_piece = tile.piece
+                if tile.under_mouse(pos) and gs.moving_piece is None:
+                    gs.moving_piece = tile.piece
             else:
                 tile.draw(background, pos)
-        inv_white.draw_inventory(background)
-        inv_dark.draw_inventory(background)
-        if moving_piece:
-            draw_drag(background, pos, moving_piece)
+        inv_white.draw_inventory(background, pos, clicked, gs.moving_piece)# fix these, in game state now
+        inv_dark.draw_inventory(background, pos, clicked, gs.moving_piece)
+        if gs.moving_piece:
+            draw_drag(background, pos, gs.moving_piece)
         pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
         pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
