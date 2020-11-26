@@ -8,31 +8,31 @@ DARK = (137, 137, 137)
 
 
 class Tile:
-    def __init__(self, coord_pair, radius, piece=None):
+    def __init__(self, coord_pair, radius, color, piece=None):
         self.coords = coord_pair
         self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
-        self.color = WHITE
+        self.color = color
         self.piece = piece
 
-        selector = np.random.randint(1, 50)
-        if selector == 1:
-            self.add_piece(Queen())
-        elif selector == 2:
-            self.add_piece(Grasshopper())
-        elif selector == 3:
-            self.add_piece(Spider())
-        elif selector == 4:
-            self.add_piece(Beetle())
-        elif selector == 5:
-            self.add_piece(Ant())
+        # selector = np.random.randint(1, 50)
+        # if selector == 1:
+        #     self.add_piece(Queen())
+        # elif selector == 2:
+        #     self.add_piece(Grasshopper())
+        # elif selector == 3:
+        #     self.add_piece(Spider())
+        # elif selector == 4:
+        #     self.add_piece(Beetle())
+        # elif selector == 5:
+        #     self.add_piece(Ant())
 
         # color = np.random.randint(1,3)
         # if color > 1:
         #     self.color = DARK
 
-    def draw(self, surface, pos, clicked=False): # pos to None as default?
+    def draw(self, surface, pos, clicked=False):  # pos to None as default?
         # if mouse, determine select or click then draw
         if self.under_mouse(pos):
             if clicked:
@@ -69,7 +69,6 @@ class Tile:
         self.coords = coord_pair
 
 
-
 def distance(pair_one, pair_two):
     x1, y1 = pair_one
     x2, y2 = pair_two
@@ -99,7 +98,7 @@ def initialize_grid(height, width, radius):
     for y in y_range:
         for x in x_range:
             if y in odd_y:
-                tiles.append(Tile((x + hex_radius, y), hex_radius + 1))
+                tiles.append(Tile((x + hex_radius, y), hex_radius + 1, WHITE))
             else:
-                tiles.append(Tile((x, y), hex_radius + 1))
+                tiles.append(Tile((x, y), hex_radius + 1, WHITE))
     return tiles

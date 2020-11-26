@@ -12,6 +12,8 @@ class Game_State:
         self.clicked = False
         self.moving_piece = None
 
+        #probably going to want to enforce player turns in here somehow
+
     def start_game(self):
         self.menu_loop = False
         self.main_loop = True
@@ -21,3 +23,17 @@ class Game_State:
         self.menu_loop = False
         self.main_loop = False
 
+    def add_moving_piece(self, piece):
+        self.moving_piece = piece
+
+    def remove_moving_piece(self):
+        self.moving_piece = None
+
+    def click(self):
+        self.clicked = True
+    
+    def unclick(self):
+        self.clicked = False
+
+    def add_tiles(self, tiles):
+        self.tiles = self.board_tiles.extend(tiles) 
