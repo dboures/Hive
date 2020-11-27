@@ -6,7 +6,7 @@ from game_state import Game_State
 from inventory_frame import Inventory_Frame
 
 DARK = (137, 137, 137)
-WHITE = (255, 255, 255)
+WHITE = (250, 250, 250)
 
 # https://www.redblobgames.com/grids/hexagons/
 # https://stackoverflow.com/questions/56984542/is-there-an-effiecient-way-of-making-a-function-to-drag-and-drop-multiple-pngs

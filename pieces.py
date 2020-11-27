@@ -1,7 +1,7 @@
 import numpy as np
 import pygame as pg
 
-WHITE = (255, 255, 255)
+WHITE = (250, 250, 250)
 DARK = (137, 137, 137)
 
 

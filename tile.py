@@ -3,7 +3,7 @@ import pygame as pg
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
+WHITE = (250, 250, 250)
 DARK = (137, 137, 137)
 
 
@@ -61,12 +61,18 @@ class Tile:
         self.color = WHITE
 
     def move_piece(self, new_tile):
-        if new_tile is not None and new_tile.coords != self.coords:
+        print(type(new_tile))
+        print(type(new_tile) is Tile)
+        if new_tile is not None and new_tile.coords != self.coords and type(new_tile) is Tile:
             new_tile.add_piece(self.piece)
             self.remove_piece()
 
     def set_coords_inventory(self, coord_pair):
         self.coords = coord_pair
+
+class Inventory_Tile(Tile):
+    def __init__(self, coord_pair, radius, color, piece):
+        super().__init__(coord_pair, radius, color, piece)
 
 
 def distance(pair_one, pair_two):

@@ -4,7 +4,7 @@ import pygame as pg
 # https://stackoverflow.com/questions/51580173/how-to-implement-button-interaction-for-main-menu-pygame
 
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
+WHITE = (250, 250, 250)
 HOVER_COLOR = (50, 70, 90)
 
 START = "START"
