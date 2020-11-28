@@ -41,6 +41,11 @@ def draw_drag(background, pos, piece=None): # move this somewhere??
     # blit in bug?selected_rect = pygame.Rect(BOARD_POS[0] + selected_piece[1] * TILESIZE, BOARD_POS[1] + selected_piece[2] * TILESIZE, TILESIZE, TILESIZE)
     pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
 
+def is_valid_move(piece, old_tile, new_tile):
+    if new_tile is not None and new_tile.coords != old_tile.coords and type(new_tile) is Tile and new_tile.piece is None:
+        return True
+    return False
+
 
 while state.running:
     while state.menu_loop:
@@ -58,6 +63,7 @@ while state.running:
                 break
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_TAB:
+                    #randomly move -- remove after done testing
                     old_tile = [x for x in state.board_tiles if x.piece is not None][0]
                     new_tile = state.board_tiles[np.random.randint(0, len(state.board_tiles))]
                     old_tile.move_piece(new_tile)
@@ -69,12 +75,14 @@ while state.running:
                 state.click()
             if event.type == pg.MOUSEBUTTONUP:
                 state.unclick()
-                if state.moving_piece:
+                if state.moving_piece and state.is_player_turn():
                     old_tile = next(
                         tile for tile in state.board_tiles if tile.piece == state.moving_piece)
                     new_tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
-                    old_tile.move_piece(new_tile)
+                    if is_valid_move(state.moving_piece, old_tile, new_tile):
+                        old_tile.move_piece(new_tile)
+                        state.next_turn()
                 state.remove_moving_piece()
 
         # only draw tiles once in a for loop

@@ -61,11 +61,9 @@ class Tile:
         self.color = WHITE
 
     def move_piece(self, new_tile):
-        print(type(new_tile))
-        print(type(new_tile) is Tile)
-        if new_tile is not None and new_tile.coords != self.coords and type(new_tile) is Tile:
-            new_tile.add_piece(self.piece)
-            self.remove_piece()
+        new_tile.add_piece(self.piece)
+        self.remove_piece()
+        
 
     def set_coords_inventory(self, coord_pair):
         self.coords = coord_pair

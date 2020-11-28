@@ -12,7 +12,8 @@ class Game_State:
         self.clicked = False
         self.moving_piece = None
 
-        #probably going to want to enforce player turns in here somehow
+        
+        self.player_turn = 1 # 1 is white, 2 is black
 
     def start_game(self):
         self.menu_loop = False
@@ -37,3 +38,17 @@ class Game_State:
 
     def add_tiles(self, tiles):
         self.tiles = self.board_tiles.extend(tiles) 
+    
+    def next_turn(self):
+        if self.player_turn == 1:
+            self.player_turn = 2
+        else:
+            self.player_turn = 1
+
+    def is_player_turn(self):
+        if self.moving_piece.color == (250, 250, 250) and self.player_turn == 1:
+            return True
+        elif self.moving_piece.color == (71, 71, 71) and self.player_turn == 2:
+            return True
+        else:
+            return False
