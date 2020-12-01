@@ -12,7 +12,7 @@ class Game_State:
         self.clicked = False
         self.moving_piece = None
 
-        
+        self.first_turn = True
         self.player_turn = 1 # 1 is white, 2 is black
 
     def start_game(self):
@@ -52,3 +52,6 @@ class Game_State:
             return True
         else:
             return False
+
+    def unlock_board(self):
+        self.first_turn = False

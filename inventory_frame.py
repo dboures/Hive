@@ -7,8 +7,6 @@ BLACK = (71, 71, 71)
 WHITE = (250, 250, 250)
 
 # white is on the left
-
-
 class Inventory_Frame:
     def __init__(self, background, pos, state, white=True):
         WIDTH, HEIGHT = background.get_size()
@@ -33,7 +31,6 @@ class Inventory_Frame:
         stock_height = inner_height * (9/10)  # the remaining inventory space
         stock_width = inner_width / 5
 
-        print(stock_height)
         self.tile_rects = []
         tiles = []
 
@@ -52,25 +49,25 @@ class Inventory_Frame:
                                   piece=Queen(self.color)))
             if i == 1:
                 for j in range(1, 3):
-                    tile_pos = tile_pos = (inner_left + (i * stock_width) + (
+                    tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 3))
                     tiles.append(Inventory_Tile(tile_pos, 20, self.color,
                                       piece=Beetle(self.color)))
             if i == 2:
                 for j in range(1, 3):
-                    tile_pos = tile_pos = (inner_left + (i * stock_width) + (
+                    tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 3))
                     tiles.append(Inventory_Tile(tile_pos, 20, self.color,
                                       piece=Spider(self.color)))
             if i == 3:
                 for j in [25, 67, 109]:
-                    tile_pos = tile_pos = (inner_left + (i * stock_width) + (
+                    tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 135))
                     tiles.append(Inventory_Tile(tile_pos, 20, self.color,
                                       piece=Grasshopper(self.color)))
             if i == 4:
                 for j in [25, 67, 109]:
-                    tile_pos = tile_pos = (inner_left + (i * stock_width) + (
+                    tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 135))
                     tiles.append(
                         Inventory_Tile(tile_pos, 20, self.color, piece=Ant(self.color)))

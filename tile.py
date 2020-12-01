@@ -72,6 +72,9 @@ class Inventory_Tile(Tile):
     def __init__(self, coord_pair, radius, color, piece):
         super().__init__(coord_pair, radius, color, piece)
 
+class Start_Tile(Tile):
+    def __init__(self, coord_pair, radius, color, piece):
+        super().__init__(coord_pair, radius, (1,1,250), piece)
 
 def distance(pair_one, pair_two):
     x1, y1 = pair_one
@@ -104,5 +107,8 @@ def initialize_grid(height, width, radius):
             if y in odd_y:
                 tiles.append(Tile((x + hex_radius, y), hex_radius + 1, WHITE))
             else:
-                tiles.append(Tile((x, y), hex_radius + 1, WHITE))
+                if x == 440 and y == 380:
+                    tiles.append(Start_Tile((x, y), hex_radius + 1, WHITE, None))
+                else:
+                    tiles.append(Tile((x, y), hex_radius + 1, WHITE))
     return tiles
