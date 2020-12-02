@@ -78,7 +78,8 @@ def move_does_not_break_hive(state, old_tile, new_tile):
     #assume Hive is contiguous to start
     temp_piece = old_tile.piece
     old_tile.remove_piece()
-    #loop through all tiles excpet this one and make sure they have something adjacent
+    #loop through all tiles except this one and make sure they have something adjacent -- 
+    # problem because can break hive as long as there are more than 2 pieces on each side 
     for tile in state.board_tiles:
         if tile != old_tile and tile != new_tile:
             if tile.piece is not None and not tile.is_hive_adjacent(state) and type(tile) is not Inventory_Tile:
@@ -108,6 +109,7 @@ while state.running:
                     tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                     print(tile.axial_coords)
+                    print(state.turn)
                 if event.key == pg.K_ESCAPE:
                     state.quit()
                     break
