@@ -105,22 +105,26 @@ def get_hex_points(coord_pair, radius):
 def initialize_grid(height, width, radius):
     hex_radius = radius  # move this somewhere?
     # How is this 6 determined?
-    y_range = list(range(height + hex_radius, 0, -2 * (hex_radius) + 6))
+    pixel_y = list(range(height + hex_radius, 0, -2 * (hex_radius) + 6))
     #axial_y = list(range(-int(len(y_range)/2), int(len(y_range)/2)))
     pixel_x = list(range(0, width + hex_radius, 2 * hex_radius))
-    x_med = statistics.median(pixel_x)
-    axial_x = [(value - x_med) / 40 for value in pixel_x]
-    odd_y = y_range[1::2]
+    #y_med = statistics.median(pixel_y)
+    axial_r = list(range(len(pixel_y) // 2, -1 * len(pixel_y) // 2, -1))
+    print(pixel_y)
+    print(axial_r)
+    print(len(pixel_y))
+    print(len(axial_r))
+    #axial_q = 
+    odd_y = pixel_y[1::2]
     tiles = []
-    print(pixel_x)
-    for y in y_range:
+    #print(pixel_x)
+    for j in range(0, len(pixel_y)):
         for k in range(0,len(pixel_x)):
-            print(pixel_x[k], axial_x[k])
-            if y in odd_y:
-                tiles.append(Tile((pixel_x[k] + hex_radius, y), (axial_x[k],1), hex_radius + 1, WHITE))
+            if pixel_y[j] in odd_y:
+                tiles.append(Tile((pixel_x[k] + hex_radius, pixel_y[j]), (1, axial_r[j]), hex_radius + 1, WHITE))
             else:
-                if pixel_x[k] == 440 and y == 380:
-                    tiles.append(Start_Tile((pixel_x[k], y), (axial_x[k],1), hex_radius + 1, WHITE, None))
+                if pixel_x[k] == 440 and pixel_y[j] == 380:
+                    tiles.append(Start_Tile((pixel_x[k], pixel_y[j]), (1, axial_r[j]), hex_radius + 1, WHITE, None))
                 else:
-                    tiles.append(Tile((pixel_x[k], y), (axial_x[k],1), hex_radius + 1, WHITE))
+                    tiles.append(Tile((pixel_x[k], pixel_y[j]), (1, axial_r[j]), hex_radius + 1, WHITE))
     return tiles
