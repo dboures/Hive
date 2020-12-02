@@ -1,5 +1,6 @@
 import numpy as np
 import pygame as pg
+import statistics
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 
 BLACK = (0, 0, 0)
@@ -8,8 +9,9 @@ DARK = (137, 137, 137)
 
 
 class Tile:
-    def __init__(self, coord_pair, radius, color, piece=None):
+    def __init__(self, coord_pair, ax_coords, radius, color, piece=None):
         self.coords = coord_pair
+        self.axial_coords = ax_coords
         self.radius = radius
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
@@ -37,6 +39,7 @@ class Tile:
         if self.under_mouse(pos):
             if clicked:
                 pg.draw.polygon(surface, (250, 1, 1), self.hex)
+                print(self.axial_coords)
             else:
                 pg.draw.polygon(surface, (250, 1, 1), self.hex_select)
                 pg.draw.polygon(surface, self.color, self.hex)
@@ -68,13 +71,17 @@ class Tile:
     def set_coords_inventory(self, coord_pair):
         self.coords = coord_pair
 
+    # def is_hive_adjacent(self, state):
+
+
+
 class Inventory_Tile(Tile):
-    def __init__(self, coord_pair, radius, color, piece):
-        super().__init__(coord_pair, radius, color, piece)
+    def __init__(self, coord_pair, ax_coords, radius, color, piece):
+        super().__init__(coord_pair, ax_coords, radius, color, piece)
 
 class Start_Tile(Tile):
-    def __init__(self, coord_pair, radius, color, piece):
-        super().__init__(coord_pair, radius, (1,1,250), piece)
+    def __init__(self, coord_pair, ax_coords, radius, color, piece):
+        super().__init__(coord_pair, ax_coords, radius, (1,1,250), piece)
 
 def distance(pair_one, pair_two):
     x1, y1 = pair_one
@@ -99,16 +106,21 @@ def initialize_grid(height, width, radius):
     hex_radius = radius  # move this somewhere?
     # How is this 6 determined?
     y_range = list(range(height + hex_radius, 0, -2 * (hex_radius) + 6))
-    x_range = list(range(0, width + hex_radius, 2 * hex_radius))
+    #axial_y = list(range(-int(len(y_range)/2), int(len(y_range)/2)))
+    pixel_x = list(range(0, width + hex_radius, 2 * hex_radius))
+    x_med = statistics.median(pixel_x)
+    axial_x = [(value - x_med) / 40 for value in pixel_x]
     odd_y = y_range[1::2]
     tiles = []
+    print(pixel_x)
     for y in y_range:
-        for x in x_range:
+        for k in range(0,len(pixel_x)):
+            print(pixel_x[k], axial_x[k])
             if y in odd_y:
-                tiles.append(Tile((x + hex_radius, y), hex_radius + 1, WHITE))
+                tiles.append(Tile((pixel_x[k] + hex_radius, y), (axial_x[k],1), hex_radius + 1, WHITE))
             else:
-                if x == 440 and y == 380:
-                    tiles.append(Start_Tile((x, y), hex_radius + 1, WHITE, None))
+                if pixel_x[k] == 440 and y == 380:
+                    tiles.append(Start_Tile((pixel_x[k], y), (axial_x[k],1), hex_radius + 1, WHITE, None))
                 else:
-                    tiles.append(Tile((x, y), hex_radius + 1, WHITE))
+                    tiles.append(Tile((pixel_x[k], y), (axial_x[k],1), hex_radius + 1, WHITE))
     return tiles
