@@ -45,32 +45,32 @@ class Inventory_Frame:
             if i == 0:
                 tile_pos = (inner_left + (i * stock_width) + (stock_width / 2),
                             inner_top + title_height + stock_height / 2)
-                tiles.append(Inventory_Tile(tile_pos, (0,0), 20, self.color,
+                tiles.append(Inventory_Tile(tile_pos, (99,99), 20, self.color,
                                   piece=Queen(self.color)))
             if i == 1:
                 for j in range(1, 3):
                     tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 3))
-                    tiles.append(Inventory_Tile(tile_pos, (0,0), 20, self.color,
+                    tiles.append(Inventory_Tile(tile_pos, (99,99), 20, self.color,
                                       piece=Beetle(self.color)))
             if i == 2:
                 for j in range(1, 3):
                     tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 3))
-                    tiles.append(Inventory_Tile(tile_pos, (0,0), 20, self.color,
+                    tiles.append(Inventory_Tile(tile_pos, (99,99), 20, self.color,
                                       piece=Spider(self.color)))
             if i == 3:
                 for j in [25, 67, 109]:
                     tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 135))
-                    tiles.append(Inventory_Tile(tile_pos, (0,0), 20, self.color,
+                    tiles.append(Inventory_Tile(tile_pos, (99,99), 20, self.color,
                                       piece=Grasshopper(self.color)))
             if i == 4:
                 for j in [25, 67, 109]:
                     tile_pos = (inner_left + (i * stock_width) + (
                         stock_width / 2), inner_top + title_height + (j * stock_height / 135))
                     tiles.append(
-                        Inventory_Tile(tile_pos, (0,0), 20, self.color, piece=Ant(self.color)))
+                        Inventory_Tile(tile_pos, (99,99), 20, self.color, piece=Ant(self.color)))
         for tile in tiles:
             tile.piece.update_pos(tile.coords)
         state.add_tiles(tiles)

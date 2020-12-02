@@ -42,12 +42,12 @@ def draw_drag(background, pos, piece=None):  # move this somewhere??
 
 
 def is_valid_move(state, old_tile, new_tile):
-    #first move
+    # first move
     if state.first_turn:
-        if new_tile is not None and new_tile.coords != old_tile.coords and type(new_tile) is Start_Tile and new_tile.piece is None:
+        if (new_tile is not None and new_tile.coords != old_tile.coords and type(new_tile) is Start_Tile and new_tile.piece is None):
             return True
-    #normal move
-    elif new_tile is not None and new_tile.coords != old_tile.coords and (type(new_tile) is Tile or type(new_tile is Start_Tile)) and new_tile.piece is None:
+    # normal move
+    elif (new_tile is not None and new_tile.coords != old_tile.coords and (type(new_tile) is Tile or type(new_tile is Start_Tile)) and new_tile.piece is None and new_tile.is_hive_adjacent(state)):
         return True
     else:
         return False
@@ -69,13 +69,9 @@ while state.running:
                 break
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_TAB:
-                    # randomly move -- remove after done testing
-                    old_tile = [
-                        x for x in state.board_tiles if x.piece is not None][0]
-                    new_tile = state.board_tiles[np.random.randint(
-                        0, len(state.board_tiles))]
-                    old_tile.move_piece(new_tile)
-                    print('rules')
+                    tile = next(
+                        (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
+                    print(tile.axial_coords)
                 if event.key == pg.K_ESCAPE:
                     state.quit()
                     break
