@@ -12,8 +12,7 @@ class Game_State:
         self.clicked = False
         self.moving_piece = None
 
-        self.first_turn = True
-        self.player_turn = 1 # 1 is white, 2 is black
+        self.turn = 1
 
     def start_game(self):
         self.menu_loop = False
@@ -40,18 +39,12 @@ class Game_State:
         self.tiles = self.board_tiles.extend(tiles) 
     
     def next_turn(self):
-        if self.player_turn == 1:
-            self.player_turn = 2
-        else:
-            self.player_turn = 1
+        self.turn += 1
 
     def is_player_turn(self):
-        if self.moving_piece.color == (250, 250, 250) and self.player_turn == 1:
+        if self.moving_piece.color == (250, 250, 250) and self.turn % 2 == 1:
             return True
-        elif self.moving_piece.color == (71, 71, 71) and self.player_turn == 2:
+        elif self.moving_piece.color == (71, 71, 71) and self.turn % 2 == 0:
             return True
         else:
             return False
-
-    def unlock_board(self):
-        self.first_turn = False

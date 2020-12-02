@@ -72,7 +72,6 @@ class Tile:
         self.coords = coord_pair
 
     def is_hive_adjacent(self, state):
-        print(len(state.board_tiles))
         for tile in self.get_adjacent_tiles(self.axial_coords, state):
             if tile.piece is not None:
                 return True
