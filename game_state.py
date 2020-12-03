@@ -1,3 +1,5 @@
+from tile import Inventory_Tile
+
 class Game_State:
     def __init__(self, tiles = [], white_inventory=None, black_inventory=None):
         #menu attributes
@@ -48,3 +50,10 @@ class Game_State:
             return True
         else:
             return False
+    
+    def get_tiles_with_pieces(self):
+        tiles = []
+        for tile in self.board_tiles:
+            if tile.piece is not None and type(tile) is not Inventory_Tile:
+                tiles.append(tile)
+        return tiles

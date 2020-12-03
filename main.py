@@ -66,7 +66,7 @@ def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing qu
             and type(new_tile) is not Inventory_Tile 
             and new_tile.piece is None 
             and new_tile.is_hive_adjacent(state)
-            and move_does_not_break_hive(state, old_tile, new_tile)
+            and move_does_not_break_hive(state, old_tile)
             #and new move is valid for piece
 
             ):
@@ -74,21 +74,25 @@ def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing qu
     else:
         return False
 
-def move_does_not_break_hive(state, old_tile, new_tile):
-    #assume Hive is contiguous to start
+def move_does_not_break_hive(state, old_tile):
     temp_piece = old_tile.piece
     old_tile.remove_piece()
-    #loop through all tiles except this one and make sure they have something adjacent -- 
-    # problem because can break hive as long as there are more than 2 pieces on each side 
-    for tile in state.board_tiles:
-        if tile != old_tile and tile != new_tile:
-            if tile.piece is not None and not tile.is_hive_adjacent(state) and type(tile) is not Inventory_Tile:
-                old_tile.add_piece(temp_piece)
-                print(tile.axial_coords)
-                print('One Hive Rule')
-                return False
-    old_tile.add_piece(temp_piece)
-    return True
+    unvisited = state.get_tiles_with_pieces()
+    print(unvisited)
+    visited = [unvisited.pop()]
+    for visited_tile in visited:
+        for unvisited_tile in unvisited:
+            if unvisited_tile in visited_tile.get_adjacent_tiles(state):
+                visited.append(unvisited.pop(unvisited.index(unvisited_tile)))
+    print(len(unvisited))
+    if len(unvisited) > 0:
+        old_tile.add_piece(temp_piece)
+        print('One Hive Rule')
+        print('unvisited tile:' + str(unvisited[0].axial_coords))
+        return False
+    else:
+        old_tile.add_piece(temp_piece)
+        return True
 
 while state.running:
     while state.menu_loop:
@@ -109,7 +113,7 @@ while state.running:
                     tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                     print(tile.axial_coords)
-                    print(state.turn)
+                    print('turn #: ' + str(state.turn))
                 if event.key == pg.K_ESCAPE:
                     state.quit()
                     break
