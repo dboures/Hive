@@ -9,8 +9,7 @@ def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing qu
     full_move_check = (base_move_check
                         and new_tile.is_hive_adjacent(state)
                         and move_does_not_break_hive(state, old_tile)
-                        and move_obeys_piece_movement(state, old_tile, new_tile)
-                        and move_is_not_blocked(state, old_tile, new_tile))
+                        and move_obeys_piece_movement(state, old_tile, new_tile))
     # first move
     if state.turn == 1:
         if base_move_check and type(new_tile) is Start_Tile:
@@ -46,7 +45,7 @@ def move_does_not_break_hive(state, old_tile):
         current_tile = queue.pop(0) 
         #print(current_tile.axial_coords, type(current_tile.piece)) 
 
-        for neighbor_tile in current_tile.get_adjacent_tiles(state, pieces=True):
+        for neighbor_tile in current_tile.get_adjacent_tiles(state, with_pieces=True):
             if neighbor_tile not in visited:
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -80,15 +79,22 @@ def move_obeys_queen_by_4(state):
 
 def move_obeys_piece_movement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99,99):
-        return True #placements are always ok
+        new_tile_adjacents = new_tile.get_adjacent_tiles(state, with_pieces=True)
+        for adjacent_tile in new_tile_adjacents:
+            if adjacent_tile.piece.color != state.moving_piece.color:#placed pieces cannot touch other player's pieces to start
+                print('piece placement violation')
+                return False
+        return True 
 
     elif type(state.moving_piece) is Queen:
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
         if dist == 1:
-            return True
+            return True and move_is_not_blocked(state, old_tile, new_tile) #some pieces don't care abt this
         else:
             print('Queen move criteria violated')
             return False
+    else:
+        return True #makes testing easier
 
 def axial_distance(one,two):
     #straight moves give tile distance, but "down" two tiles gives 1.7s, not sure about that
