@@ -78,14 +78,18 @@ class Tile:
         print('Hive Adjacency')
         return False
 
-    def get_adjacent_tiles(self, state):
+    def get_adjacent_tiles(self, state, pieces=False):
         q,r = self.axial_coords
         adjacent_tiles = []
         #print([(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)])
         #print(self.axial_coords)
         for tile in state.board_tiles:
             if tile.axial_coords in [(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)]:
-                adjacent_tiles.append(tile)
+                if pieces:
+                    if tile.piece is not None:
+                        adjacent_tiles.append(tile)
+                else:
+                    adjacent_tiles.append(tile)
         return adjacent_tiles
 
 
