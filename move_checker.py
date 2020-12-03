@@ -1,41 +1,32 @@
-Queenimport numpy as np
+import numpy as np
 from tile import Start_Tile, Inventory_Tile
 from pieces import Queen
 
 def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing queen placement
-    base_check = (new_tile is not None 
-                and new_tile.coords != old_tile.coords
-                and new_tile.piece is None)
+    base_move_check = (new_tile is not None 
+                        and new_tile.coords != old_tile.coords
+                        and new_tile.piece is None)
+    full_move_check = (base_move_check
+                        and new_tile.is_hive_adjacent(state)
+                        and move_does_not_break_hive(state, old_tile)
+                        and move_obeys_piece_movement(state, old_tile, new_tile)
+                        and move_is_not_blocked(state, old_tile, new_tile))
     # first move
     if state.turn == 1:
-        if base_check and type(new_tile) is Start_Tile:
+        if base_move_check and type(new_tile) is Start_Tile:
             return True
     # second
     elif state.turn == 2:
-        if (base_check 
+        if (base_move_check 
             and new_tile.is_hive_adjacent(state)):
             return True
-    elif state.turn >= 3 and state.turn <= 6:
-        if (base_check
-            and new_tile.is_hive_adjacent(state)
-            and move_does_not_break_hive(state, old_tile)
-            #and new move is valid for piece
-            ):
-            return True
     elif state.turn == 7 or state.turn == 8:
-        if (base_check
-            and new_tile.is_hive_adjacent(state)
-            and move_does_not_break_hive(state, old_tile)
-            #and new move is valid for piece
+        if (full_move_check
             and move_obeys_queen_by_4(state)
             ):
             return True
     else:
-        if (base_check
-            and new_tile.is_hive_adjacent(state)
-            and move_does_not_break_hive(state, old_tile)
-            and move_obeys_piece_movement(state, old_tile, new_tile)
-            ):
+        if (full_move_check):
             return True
         return False
 
@@ -96,6 +87,7 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
         if dist == 1:
             return True
         else:
+            print('Queen move criteria violated')
             return False
 
 def axial_distance(one,two):
@@ -104,3 +96,19 @@ def axial_distance(one,two):
     q1,r1 = one
     q2,r2 = two
     return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))
+
+def move_is_not_blocked(state, old_tile, new_tile):
+    original_adjacents = old_tile.get_adjacent_tiles(state)
+    new_adjacents = new_tile.get_adjacent_tiles(state)
+    overlap_tiles = [tile for tile in new_adjacents if tile in original_adjacents] # should only ever be 2 because hexagon shape
+    if len(overlap_tiles) > 2:
+        print('move_is_not_blocked overlap error')
+        return False
+    elif len(overlap_tiles) < 2:
+        return True
+    elif overlap_tiles[0].piece is not None and overlap_tiles[1].piece is not None:
+        print('Move is physically blocked')
+        return False
+    else:
+        return True
+
