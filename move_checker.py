@@ -1,3 +1,4 @@
+Queenimport numpy as np
 from tile import Start_Tile, Inventory_Tile
 from pieces import Queen
 
@@ -33,7 +34,7 @@ def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing qu
         if (base_check
             and new_tile.is_hive_adjacent(state)
             and move_does_not_break_hive(state, old_tile)
-            #and new move is valid for piece
+            and move_obeys_piece_movement(state, old_tile, new_tile)
             ):
             return True
         return False
@@ -46,13 +47,13 @@ def move_does_not_break_hive(state, old_tile):
     visited = [] # List to keep track of visited nodes.
     queue = []     #Initialize a queue
 
-    #def bfs(visited, graph, node):
+    #BFS: https://www.quora.com/Is-BFS-faster-and-more-efficient-than-DFS
     visited.append(tile_list[0])
     queue.append(tile_list[0])
 
     while queue:
         current_tile = queue.pop(0) 
-        print(current_tile.axial_coords, type(current_tile.piece)) 
+        #print(current_tile.axial_coords, type(current_tile.piece)) 
 
         for neighbor_tile in current_tile.get_adjacent_tiles(state, pieces=True):
             if neighbor_tile not in visited:
@@ -84,4 +85,22 @@ def move_obeys_queen_by_4(state):
             return True
         else:
             print('Queen by 4')
-            return False 
+            return False
+
+def move_obeys_piece_movement(state, old_tile, new_tile):
+    if old_tile.axial_coords == (99,99):
+        return True #placements are always ok
+
+    elif type(state.moving_piece) is Queen:
+        dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
+        if dist == 1:
+            return True
+        else:
+            return False
+
+def axial_distance(one,two):
+    #straight moves give tile distance, but "down" two tiles gives 1.7s, not sure about that
+    #feel like it would be most useful to have a tile distance counted from the outside type function
+    q1,r1 = one
+    q2,r2 = two
+    return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))
