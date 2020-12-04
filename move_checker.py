@@ -1,6 +1,6 @@
 import numpy as np
 from tile import Start_Tile, Inventory_Tile
-from pieces import Queen
+from pieces import Queen, Ant
 
 def is_valid_move(state, old_tile, new_tile): #still need to handle enforcing queen placement
     base_move_check = (new_tile is not None 
@@ -45,7 +45,7 @@ def move_does_not_break_hive(state, old_tile):
         current_tile = queue.pop(0) 
         #print(current_tile.axial_coords, type(current_tile.piece)) 
 
-        for neighbor_tile in current_tile.get_adjacent_tiles(state, with_pieces=True):
+        for neighbor_tile in current_tile.get_adjacent_tiles(state, type='with_pieces'):
             if neighbor_tile not in visited:
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -79,7 +79,7 @@ def move_obeys_queen_by_4(state):
 
 def move_obeys_piece_movement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99,99):
-        new_tile_adjacents = new_tile.get_adjacent_tiles(state, with_pieces=True)
+        new_tile_adjacents = new_tile.get_adjacent_tiles(state, type='with_pieces')
         for adjacent_tile in new_tile_adjacents:
             if adjacent_tile.piece.color != state.moving_piece.color:#placed pieces cannot touch other player's pieces to start
                 print('piece placement violation')
@@ -88,10 +88,18 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
 
     elif type(state.moving_piece) is Queen:
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-        if dist == 1:
-            return True and move_is_not_blocked(state, old_tile, new_tile) #some pieces don't care abt this
+        if dist == 1 and move_is_not_blocked(state, old_tile, new_tile):
+            return True  #some pieces don't care abt this
         else:
             print('Queen move criteria violated')
+            return False
+
+    elif type(state.moving_piece) is Ant:
+        dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
+        if path_exists(state, old_tile, new_tile) and move_is_not_blocked(state, old_tile, new_tile): #seems a tad slow to do both (uh oh)
+            return True 
+        else:
+            print('Ant move criteria violated')
             return False
     else:
         return True #makes testing easier
@@ -103,8 +111,8 @@ def axial_distance(one,two):
     q2,r2 = two
     return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))
 
-def move_is_not_blocked(state, old_tile, new_tile):
-    original_adjacents = old_tile.get_adjacent_tiles(state)
+def move_is_not_blocked(state, old_tile, new_tile): # doesnt work for the ant, need the position before final for example
+    original_adjacents = old_tile.get_adjacent_tiles(state) # maybe think aout using the types in function?
     new_adjacents = new_tile.get_adjacent_tiles(state)
     overlap_tiles = [tile for tile in new_adjacents if tile in original_adjacents] # should only ever be 2 because hexagon shape
     if len(overlap_tiles) > 2:
@@ -117,4 +125,25 @@ def move_is_not_blocked(state, old_tile, new_tile):
         return False
     else:
         return True
+
+def path_exists(state, old_tile, new_tile):
+    # does DFS guarantee a better tile orderin
+
+    visited = [old_tile] # List to keep track of visited nodes.
+    queue = [old_tile]     #Initialize a queue
+
+    while queue:
+        current_tile = queue.pop(0) 
+
+        for neighbor_tile in current_tile.get_adjacent_tiles(state, type='outside_hive'):
+            if neighbor_tile not in visited and move_is_not_blocked(state, neighbor_tile, current_tile): #gotta make this work
+                visited.append(neighbor_tile)
+                queue.append(neighbor_tile)
+    
+    if new_tile in visited:
+        return True
+    else:
+        print('no path exists on hive edge')
+        return False
+
 

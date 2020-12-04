@@ -72,21 +72,24 @@ class Tile:
         self.coords = coord_pair
 
     def is_hive_adjacent(self, state):
-        for tile in self.get_adjacent_tiles(state):
-            if tile.piece is not None:
+        piece_tiles = self.get_adjacent_tiles(state, type='with_pieces')
+        if len(piece_tiles) > 0:
                 return True
         print('Hive Adjacency')
         return False
 
-    def get_adjacent_tiles(self, state, with_pieces=False):
+    def get_adjacent_tiles(self, state, type=None):
         q,r = self.axial_coords
         adjacent_tiles = []
         #print([(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)])
         #print(self.axial_coords)
         for tile in state.board_tiles:
             if tile.axial_coords in [(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)]:
-                if with_pieces:
+                if type == 'with_pieces':
                     if tile.piece is not None:
+                        adjacent_tiles.append(tile)
+                elif type == 'outside_hive':
+                    if tile.piece is None and tile.is_hive_adjacent(state):
                         adjacent_tiles.append(tile)
                 else:
                     adjacent_tiles.append(tile)

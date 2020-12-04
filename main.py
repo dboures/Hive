@@ -42,6 +42,14 @@ def draw_drag(background, pos, piece=None):  # move this somewhere??
     # blit in bug?selected_rect = pygame.Rect(BOARD_POS[0] + selected_piece[1] * TILESIZE, BOARD_POS[1] + selected_piece[2] * TILESIZE, TILESIZE, TILESIZE)
     pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
 
+def test(state, tile):
+        piece_tiles = tile.get_adjacent_tiles(state, type='with_pieces')
+        if len(piece_tiles) > 0:
+            print('Hive Adjacent')
+            return True
+        print('Not Hive Adjacenct')
+        return False
+
 while state.running:
     while state.menu_loop:
         for event in pg.event.get():
@@ -65,6 +73,10 @@ while state.running:
                 if event.key == pg.K_ESCAPE:
                     state.quit()
                     break
+                if event.key == pg.K_PAGEUP:
+                    tt = next(
+                        (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
+                    test(state, tt)
             if event.type == pg.MOUSEBUTTONDOWN:
                 state.click()
             if event.type == pg.MOUSEBUTTONUP:
@@ -96,3 +108,5 @@ while state.running:
         pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
         pg.display.flip()
+
+    
