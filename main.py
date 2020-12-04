@@ -32,7 +32,7 @@ pg.display.set_icon(icon)
 
 
 state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
-
+state.update_adjacent_tiles() #needs refactoring
 inv_white = Inventory_Frame(background, (0, 158), state, white=True)
 inv_dark = Inventory_Frame(background, (440, 158), state, white=False)
 
@@ -43,12 +43,11 @@ def draw_drag(background, pos, piece=None):  # move this somewhere??
     pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
 
 def test(state, tile):
-        piece_tiles = tile.get_adjacent_tiles(state, type='with_pieces')
-        if len(piece_tiles) > 0:
-            print('Hive Adjacent')
-            return True
-        print('Not Hive Adjacenct')
-        return False
+        # if len(piece_tiles) > 0:
+        #     print('Hive Adjacent')
+        #     return True
+        print('Test')
+        #return False
 
 while state.running:
     while state.menu_loop:

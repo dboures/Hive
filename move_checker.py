@@ -45,7 +45,7 @@ def move_does_not_break_hive(state, old_tile):
         current_tile = queue.pop(0) 
         #print(current_tile.axial_coords, type(current_tile.piece)) 
 
-        for neighbor_tile in current_tile.get_adjacent_tiles(state, type='with_pieces'):
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.piece is not None]:
             if neighbor_tile not in visited:
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -79,9 +79,9 @@ def move_obeys_queen_by_4(state):
 
 def move_obeys_piece_movement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99,99):
-        new_tile_adjacents = new_tile.get_adjacent_tiles(state, type='with_pieces')
-        for adjacent_tile in new_tile_adjacents:
-            if adjacent_tile.piece.color != state.moving_piece.color:#placed pieces cannot touch other player's pieces to start
+        new_tile_adjacents_with_pieces = [x for x in new_tile.adjacent_tiles if x.piece is not None]
+        for tile in new_tile_adjacents_with_pieces:
+            if tile.piece.color != state.moving_piece.color:#placed pieces cannot touch other player's pieces to start
                 print('piece placement violation')
                 return False
         return True 
@@ -111,10 +111,10 @@ def axial_distance(one,two):
     q2,r2 = two
     return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))
 
-def move_is_not_blocked(state, old_tile, new_tile): # doesnt work for the ant, need the position before final for example
-    original_adjacents = old_tile.get_adjacent_tiles(state) # maybe think aout using the types in function?
-    new_adjacents = new_tile.get_adjacent_tiles(state)
-    overlap_tiles = [tile for tile in new_adjacents if tile in original_adjacents] # should only ever be 2 because hexagon shape
+def move_is_not_blocked(state, old_tile, new_tile): #check for each pathfinding move
+    old_adjacents_with_pieces = [x for x in old_tile.adjacent_tiles if x.piece is not None]
+    new_adjacents_with_pieces = [x for x in new_tile.adjacent_tiles if x.piece is not None]
+    overlap_tiles = [x for x in new_adjacents_with_pieces if x in old_adjacents_with_pieces]
     if len(overlap_tiles) > 2:
         print('move_is_not_blocked overlap error')
         return False
@@ -132,11 +132,10 @@ def path_exists(state, old_tile, new_tile):
     visited = [old_tile] # List to keep track of visited nodes.
     queue = [old_tile]     #Initialize a queue
 
-    while queue:
+    while queue and new_tile not in visited:
         current_tile = queue.pop(0) 
-
-        for neighbor_tile in current_tile.get_adjacent_tiles(state, type='outside_hive'):
-            if neighbor_tile not in visited and move_is_not_blocked(state, neighbor_tile, current_tile): #gotta make this work
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and x.piece is None]:
+            if neighbor_tile not in visited and move_is_not_blocked(state, current_tile, neighbor_tile): #gotta make this work
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
     

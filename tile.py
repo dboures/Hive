@@ -17,6 +17,7 @@ class Tile:
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
         self.color = color
         self.piece = piece
+        self.adjacent_tiles = []
 
         # selector = np.random.randint(1, 50)
         # if selector == 1:
@@ -72,28 +73,24 @@ class Tile:
         self.coords = coord_pair
 
     def is_hive_adjacent(self, state):
-        piece_tiles = self.get_adjacent_tiles(state, type='with_pieces')
-        if len(piece_tiles) > 0:
+        for tile in self.adjacent_tiles:
+            if tile.piece is not None:
                 return True
         print('Hive Adjacency')
         return False
 
-    def get_adjacent_tiles(self, state, type=None):
+    def set_adjacent_tiles(self, board_tiles): # tiles don't move, only pieces do
         q,r = self.axial_coords
         adjacent_tiles = []
         #print([(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)])
         #print(self.axial_coords)
-        for tile in state.board_tiles:
+        for tile in board_tiles:
             if tile.axial_coords in [(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)]:
-                if type == 'with_pieces':
-                    if tile.piece is not None:
-                        adjacent_tiles.append(tile)
-                elif type == 'outside_hive':
-                    if tile.piece is None and tile.is_hive_adjacent(state):
-                        adjacent_tiles.append(tile)
-                else:
-                    adjacent_tiles.append(tile)
-        return adjacent_tiles
+                adjacent_tiles.append(tile)
+
+        self.adjacent_tiles = adjacent_tiles
+
+
 
 
 
@@ -141,4 +138,5 @@ def initialize_grid(height, width, radius): #as far as intuitiveness goes, this 
                     tiles.append(Start_Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE, None))
                 else:
                     tiles.append(Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE))
+    
     return tiles

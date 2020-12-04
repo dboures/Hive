@@ -57,3 +57,7 @@ class Game_State:
             if tile.piece is not None and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
+
+    def update_adjacent_tiles(self):
+        for tile in self.board_tiles:
+            tile.set_adjacent_tiles(self.board_tiles)
