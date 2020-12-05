@@ -67,8 +67,9 @@ while state.running:
                 if event.key == pg.K_TAB:
                     tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
-                    print(tile.axial_coords)
-                    print('turn #: ' + str(state.turn))
+                    q,r = tile.axial_coords
+                    print(q,r) # -q-r third cube coord
+                    #print('turn #: ' + str(state.turn))
                 if event.key == pg.K_ESCAPE:
                     state.quit()
                     break
