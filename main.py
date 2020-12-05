@@ -6,6 +6,7 @@ from move_checker import is_valid_move
 from start_menu import start_menu
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
+from turn_panel import Turn_Panel
 
 DARK = (137, 137, 137)
 WHITE = (250, 250, 250)
@@ -35,6 +36,7 @@ state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
 state.update_adjacent_tiles() #needs refactoring
 inv_white = Inventory_Frame(background, (0, 158), state, white=True)
 inv_dark = Inventory_Frame(background, (440, 158), state, white=False)
+turn_indicator = Turn_Panel(background, state)
 
 
 def draw_drag(background, pos, piece=None):  # move this somewhere??
@@ -104,6 +106,7 @@ while state.running:
                 tile.draw(background, pos)
         if state.moving_piece:
             draw_drag(background, pos, state.moving_piece)
+        turn_indicator.draw_turn_panel(background, state)
         pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
         pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
