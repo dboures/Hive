@@ -96,6 +96,7 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
                 return False
         return True
 
+    #Refactor into piece class methods eventually
     elif type(state.moving_piece) is Queen:
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
         if dist == 1 and move_is_not_blocked(state, old_tile, new_tile):
@@ -118,13 +119,12 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
             print('Grasshopper move criteria violated')
             return False
 
-    # elif type(state.moving_piece) is Beetle:
-    #     dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-    #     if dist == 1 and move_is_not_blocked(state, old_tile, new_tile) and new_tile.:
-    #         print('Beetle move criteria violated')
-    #         return True
-    #     else:
-    #         return False
+    elif type(state.moving_piece) is Beetle:
+        if obeys_beetle_movement(state, old_tile, new_tile):
+            return True
+        else:
+            print('Beetle move criteria violated')
+            return False
     else:
         return True  # makes testing easier
 
@@ -206,3 +206,13 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
 
     else:
         return False
+
+def obeys_beetle_movement(state, old_tile, new_tile):
+    dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
+    if dist == 1 and (move_is_not_blocked(state, old_tile, new_tile) or new_tile.has_pieces() or len(old_tile.pieces) > 1): 
+        # cant slide into a blocked place but it can go up or down into one
+        return True
+    else:
+        print('Beetle move criteria violated')
+        return False
+    

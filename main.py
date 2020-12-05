@@ -98,7 +98,7 @@ while state.running:
         for tile in state.board_tiles:
             if state.clicked:
                 tile.draw(background, pos, state.clicked)
-                if tile.under_mouse(pos) and state.moving_piece is None:
+                if tile.under_mouse(pos) and state.moving_piece is None and tile.has_pieces():
                     state.moving_piece = tile.pieces[-1]
             else:
                 tile.draw(background, pos)
