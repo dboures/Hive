@@ -1,12 +1,12 @@
 import numpy as np
 from tile import Start_Tile, Inventory_Tile
-from pieces import Queen, Ant, Grasshopper
+from pieces import Queen, Ant, Grasshopper, Beetle
 
 
 def is_valid_move(state, old_tile, new_tile):
     base_move_check = (new_tile is not None
                        and new_tile.coords != old_tile.coords
-                       and new_tile.piece is None)
+                       and ((not new_tile.has_pieces()) or type(state.moving_piece) is Beetle))
     full_move_check = (base_move_check
                        and new_tile.is_hive_adjacent(state)
                        and move_does_not_break_hive(state, old_tile)
@@ -32,7 +32,7 @@ def is_valid_move(state, old_tile, new_tile):
 
 
 def move_does_not_break_hive(state, old_tile):
-    temp_piece = old_tile.piece
+    temp_piece = old_tile.pieces[-1]
     old_tile.remove_piece()
     tile_list = state.get_tiles_with_pieces()
     # print(unvisited)
@@ -47,7 +47,7 @@ def move_does_not_break_hive(state, old_tile):
         current_tile = queue.pop(0)
         #print(current_tile.axial_coords, type(current_tile.piece))
 
-        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.piece is not None]:
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.has_pieces()]:
             if neighbor_tile not in visited:
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -62,8 +62,11 @@ def move_does_not_break_hive(state, old_tile):
 
 
 def move_obeys_queen_by_4(state):
-    queens_on_board = [
-        tile.piece for tile in state.get_tiles_with_pieces() if type(tile.piece) is Queen]
+    queens_on_board = []
+    for tile in state.get_tiles_with_pieces():
+        for piece in tile.pieces:
+            if type(piece) is Queen:
+                queens_on_board.append(piece)
     # print(queens_on_board)
     # 2 queens
     if len(queens_on_board) == 2:
@@ -85,10 +88,10 @@ def move_obeys_queen_by_4(state):
 def move_obeys_piece_movement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99, 99):
         new_tile_adjacents_with_pieces = [
-            x for x in new_tile.adjacent_tiles if x.piece is not None]
+            x for x in new_tile.adjacent_tiles if x.has_pieces()]
         for tile in new_tile_adjacents_with_pieces:
             # placed pieces cannot touch other player's pieces to start
-            if tile.piece.color != state.moving_piece.color:
+            if tile.pieces[-1].color != state.moving_piece.color:
                 print('piece placement violation')
                 return False
         return True
@@ -102,8 +105,6 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
             return False
 
     elif type(state.moving_piece) is Ant:
-        dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-        # seems a tad slow to do both (uh oh)
         if path_exists(state, old_tile, new_tile) and move_is_not_blocked(state, old_tile, new_tile):
             return True
         else:
@@ -111,12 +112,19 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
             return False
 
     elif type(state.moving_piece) is Grasshopper:
-        # if its in a straight line, and every tile in between has a piece
         if obeys_grasshopper_movement(state, old_tile, new_tile):
             return True
         else:
             print('Grasshopper move criteria violated')
             return False
+
+    # elif type(state.moving_piece) is Beetle:
+    #     dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
+    #     if dist == 1 and move_is_not_blocked(state, old_tile, new_tile) and new_tile.:
+    #         print('Beetle move criteria violated')
+    #         return True
+    #     else:
+    #         return False
     else:
         return True  # makes testing easier
 
@@ -131,9 +139,9 @@ def axial_distance(one, two):
 
 def move_is_not_blocked(state, old_tile, new_tile):  # check for each pathfinding move
     old_adjacents_with_pieces = [
-        x for x in old_tile.adjacent_tiles if x.piece is not None]
+        x for x in old_tile.adjacent_tiles if x.has_pieces()]
     new_adjacents_with_pieces = [
-        x for x in new_tile.adjacent_tiles if x.piece is not None]
+        x for x in new_tile.adjacent_tiles if x.has_pieces()]
     overlap_tiles = [
         x for x in new_adjacents_with_pieces if x in old_adjacents_with_pieces]
     if len(overlap_tiles) > 2:
@@ -141,7 +149,7 @@ def move_is_not_blocked(state, old_tile, new_tile):  # check for each pathfindin
         return False
     elif len(overlap_tiles) < 2:
         return True
-    elif overlap_tiles[0].piece is not None and overlap_tiles[1].piece is not None:
+    elif overlap_tiles[0].has_pieces() and overlap_tiles[1].has_pieces():
         print('Move is physically blocked')
         return False
     else:
@@ -155,7 +163,7 @@ def path_exists(state, old_tile, new_tile):
 
     while queue and new_tile not in visited:
         current_tile = queue.pop(0)
-        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and x.piece is None]:
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and  (not x.has_pieces())]:
             if neighbor_tile not in visited and move_is_not_blocked(state, current_tile, neighbor_tile):
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -175,7 +183,7 @@ def is_straight_line(old_coords, new_coords):
 
 
 def obeys_grasshopper_movement(state, old_tile, new_tile):
-
+    #dist > 1, straight line, must hop over pieces
     dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
 
     if dist > 1:
@@ -184,13 +192,13 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
         while queue and new_tile not in visited:
             current_tile = queue.pop(0)
             for neighbor_tile in [x for x in current_tile.adjacent_tiles 
-                                            if x.piece is not None
+                                            if x.has_pieces()
                                             and is_straight_line(old_tile.axial_coords, x.axial_coords)]:
                 if neighbor_tile not in visited and move_is_not_blocked(state, current_tile, neighbor_tile):
                     visited.append(neighbor_tile)
                     queue.append(neighbor_tile)
 
-        for penultimate_tile in [x for x in new_tile.adjacent_tiles if x.piece is not None]:
+        for penultimate_tile in [x for x in new_tile.adjacent_tiles if x.has_pieces()]:
             if penultimate_tile in visited and is_straight_line(old_tile.axial_coords, new_tile.axial_coords):
                 return True
         else:

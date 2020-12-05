@@ -72,7 +72,8 @@ class Inventory_Frame:
                     tiles.append(
                         Inventory_Tile(tile_pos, (99,99), 20, self.color, piece=Ant(self.color)))
         for tile in tiles:
-            tile.piece.update_pos(tile.coords)
+            for piece in tile.pieces:
+                piece.update_pos(tile.coords)
         state.add_tiles(tiles)
 
         FONT = pg.font.SysFont("Times New Norman", 24)

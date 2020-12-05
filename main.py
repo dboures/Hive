@@ -83,7 +83,7 @@ while state.running:
                 state.unclick()
                 if state.moving_piece and state.is_player_turn():
                     old_tile = next(
-                        tile for tile in state.board_tiles if tile.piece == state.moving_piece)
+                        tile for tile in state.board_tiles if  (tile.has_pieces() and tile.pieces[-1] == state.moving_piece))
                     new_tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                     if is_valid_move(state, old_tile, new_tile):
@@ -99,7 +99,7 @@ while state.running:
             if state.clicked:
                 tile.draw(background, pos, state.clicked)
                 if tile.under_mouse(pos) and state.moving_piece is None:
-                    state.moving_piece = tile.piece
+                    state.moving_piece = tile.pieces[-1]
             else:
                 tile.draw(background, pos)
         if state.moving_piece:

@@ -16,8 +16,11 @@ class Tile:
         self.hex = get_hex_points(coord_pair, radius)
         self.hex_select = get_hex_points(coord_pair, radius * 1.1)
         self.color = color
-        self.piece = piece
         self.adjacent_tiles = []
+        if piece:
+            self.pieces = [piece]
+        else:
+            self.pieces = []
 
         # selector = np.random.randint(1, 50)
         # if selector == 1:
@@ -46,8 +49,8 @@ class Tile:
                 pg.draw.polygon(surface, self.color, self.hex)
         else:
             pg.draw.polygon(surface, self.color, self.hex)
-        if self.piece:
-            self.piece.draw(surface, self.coords)
+        if self.has_pieces():
+            self.pieces[-1].draw(surface, self.coords)
 
     def under_mouse(self, pos):
         if distance(self.coords, pos) < self.radius - 1:
@@ -56,25 +59,33 @@ class Tile:
             return False
 
     def add_piece(self, piece):
-        self.piece = piece
-        self.piece.update_pos(self.coords)
-        self.color = piece.color
+        self.pieces.append(piece)
+        self.pieces[-1].update_pos(self.coords)
+        self.color = self.pieces[-1].color
 
     def remove_piece(self):
-        self.piece = None
-        self.color = WHITE
+        self.pieces.pop(-1)
+        if self.has_pieces():
+            self.color = self.pieces[-1].color
+        else:
+            self.color = WHITE
 
     def move_piece(self, new_tile):
-        new_tile.add_piece(self.piece)
+        new_tile.add_piece(self.pieces[-1])
         self.remove_piece()
-        
+
+    def has_pieces(self):
+        if len(self.pieces) > 0:
+            return True
+        else:
+            return False
 
     def set_coords_inventory(self, coord_pair):
         self.coords = coord_pair
 
     def is_hive_adjacent(self, state):
         for tile in self.adjacent_tiles:
-            if tile.piece is not None:
+            if tile.has_pieces():
                 return True
         print('Hive Adjacency')
         return False
