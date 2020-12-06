@@ -20,6 +20,10 @@ def is_valid_move(state, old_tile, new_tile):
         if (base_move_check
                 and new_tile.is_hive_adjacent(state)):
             return True
+    elif state.turn <= 6 and state.turn >=3:
+        if (full_move_check
+                and queen_is_on_board(state, old_tile)):
+            return True
     elif state.turn == 7 or state.turn == 8:
         if (full_move_check
                 and move_obeys_queen_by_4(state)
@@ -28,7 +32,7 @@ def is_valid_move(state, old_tile, new_tile):
     else:
         if (full_move_check):
             return True
-        return False
+    return False
 
 
 def move_does_not_break_hive(state, old_tile):
@@ -60,18 +64,36 @@ def move_does_not_break_hive(state, old_tile):
         old_tile.add_piece(temp_piece)
         return True
 
-
+def queen_is_on_board(state, old_tile):
+    if old_tile.axial_coords == (99,99): #placements are ok
+        return True
+    else:# allow move if queen is down for that color
+        if state.turn % 2 == 1:
+            color = (250, 250, 250)
+        else:
+            color = (137, 137, 137)
+        for tile in state.get_tiles_with_pieces():
+            for piece in tile.pieces:
+                if type(piece) is Queen and piece.color == color:
+                    return True
+    print('cant move till queen is placed')
+    return False
 def move_obeys_queen_by_4(state):
     queens_on_board = []
     for tile in state.get_tiles_with_pieces():
         for piece in tile.pieces:
             if type(piece) is Queen:
                 queens_on_board.append(piece)
-    # print(queens_on_board)
+    #print(queens_on_board)
     # 2 queens
     if len(queens_on_board) == 2:
         return True
-    elif len(queens_on_board) >= 0:
+    elif len(queens_on_board) == 0:
+        if state.turn == 7 and type(state.moving_piece) is Queen and state.moving_piece.color == (250, 250, 250):
+            return True
+        elif state.turn == 7 and type(state.moving_piece) is Queen and state.moving_piece.color == (137, 137, 137):
+            return True
+    elif len(queens_on_board) > 0:
         if queens_on_board[0].color == (250, 250, 250) and state.turn == 7:
             return True
         elif queens_on_board[0].color == (137, 137, 137) and state.turn == 7 and type(state.moving_piece) is Queen:
@@ -80,9 +102,9 @@ def move_obeys_queen_by_4(state):
             return True
         elif queens_on_board[0].color == (250, 250, 250) and state.turn == 8 and type(state.moving_piece) is Queen:
             return True
-        else:
-            print('Queen by 4')
-            return False
+    
+    print('Queen by 4')
+    return False
 
 
 def move_obeys_piece_movement(state, old_tile, new_tile):
@@ -192,10 +214,9 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
             for neighbor_tile in [x for x in current_tile.adjacent_tiles 
                                             if x.has_pieces()
                                             and is_straight_line(old_tile.axial_coords, x.axial_coords)]:
-                if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
+                if neighbor_tile not in visited:
                     visited.append(neighbor_tile)
                     queue.append(neighbor_tile)
-
         for penultimate_tile in [x for x in new_tile.adjacent_tiles if x.has_pieces()]:
             if penultimate_tile in visited and is_straight_line(old_tile.axial_coords, new_tile.axial_coords):
                 return True

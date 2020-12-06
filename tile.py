@@ -71,8 +71,8 @@ class Tile:
             self.color = WHITE
 
     def move_piece(self, new_tile):
-        print(self.axial_coords)
-        print(self.pieces)
+        #print(self.axial_coords)
+        #print(self.pieces)
         new_tile.add_piece(self.pieces[-1])
         self.remove_piece()
 
