@@ -98,33 +98,17 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
 
     #Refactor into piece class methods eventually
     elif type(state.moving_piece) is Queen:
-        dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-        if dist == 1 and move_is_not_blocked_or_jump(state, old_tile, new_tile):
-            return True
-        else:
-            print('Queen move criteria violated')
-            return False
+        return obeys_queen_movement(state, old_tile, new_tile)
 
     elif type(state.moving_piece) is Ant:
-        if obeys_ant_movement(state, old_tile, new_tile): 
-            return True
-        else:
-            print('Ant move criteria violated')
-            return False
+        return obeys_ant_movement(state, old_tile, new_tile) 
 
     elif type(state.moving_piece) is Grasshopper:
-        if obeys_grasshopper_movement(state, old_tile, new_tile):
-            return True
-        else:
-            print('Grasshopper move criteria violated')
-            return False
+        return obeys_grasshopper_movement(state, old_tile, new_tile)
 
     elif type(state.moving_piece) is Beetle:
-        if obeys_beetle_movement(state, old_tile, new_tile):
-            return True
-        else:
-            print('Beetle move criteria violated')
-            return False
+        return obeys_beetle_movement(state, old_tile, new_tile)
+            
     else:
         return True  # makes testing easier
 
@@ -180,10 +164,20 @@ def is_straight_line(old_coords, new_coords):
 
     return (q1 == q2) or (r1 == r2) or ((-q1 - r1) == (-q2 - r2))
 
+def obeys_queen_movement(state, old_tile, new_tile):
+    dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
+    if dist == 1 and move_is_not_blocked_or_jump(state, old_tile, new_tile):
+        return True
+    else:
+        print('Queen move criteria violated')
+        return False
+
+
 def obeys_ant_movement(state, old_tile, new_tile):
     if path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
         return True
     else:
+        print('Ant move criteria violated')
         return False
 
 def obeys_grasshopper_movement(state, old_tile, new_tile):
@@ -209,6 +203,7 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
             print('no straight path with pieces')
 
     else:
+        print('Grasshopper move criteria violated')
         return False
 
 def obeys_beetle_movement(state, old_tile, new_tile):
@@ -219,4 +214,3 @@ def obeys_beetle_movement(state, old_tile, new_tile):
     else:
         print('Beetle move criteria violated')
         return False
-    
