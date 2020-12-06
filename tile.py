@@ -3,9 +3,7 @@ import pygame as pg
 import statistics
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 
-BLACK = (0, 0, 0)
 WHITE = (250, 250, 250)
-DARK = (137, 137, 137)
 
 
 class Tile:

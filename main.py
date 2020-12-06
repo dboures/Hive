@@ -8,7 +8,6 @@ from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 
-DARK = (137, 137, 137)
 WHITE = (250, 250, 250)
 
 # https://www.redblobgames.com/grids/hexagons/

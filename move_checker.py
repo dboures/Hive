@@ -1,6 +1,6 @@
 import numpy as np
 from tile import Start_Tile, Inventory_Tile
-from pieces import Queen, Ant, Grasshopper, Beetle
+from pieces import Queen, Ant, Grasshopper, Beetle, Spider
 
 
 def is_valid_move(state, old_tile, new_tile):
@@ -71,9 +71,10 @@ def queen_is_on_board(state, old_tile):
         if state.turn % 2 == 1:
             color = (250, 250, 250)
         else:
-            color = (137, 137, 137)
+            color = (71, 71, 71)
         for tile in state.get_tiles_with_pieces():
             for piece in tile.pieces:
+                print(piece.color)
                 if type(piece) is Queen and piece.color == color:
                     return True
     print('cant move till queen is placed')
@@ -91,14 +92,14 @@ def move_obeys_queen_by_4(state):
     elif len(queens_on_board) == 0:
         if state.turn == 7 and type(state.moving_piece) is Queen and state.moving_piece.color == (250, 250, 250):
             return True
-        elif state.turn == 7 and type(state.moving_piece) is Queen and state.moving_piece.color == (137, 137, 137):
+        elif state.turn == 8 and type(state.moving_piece) is Queen and state.moving_piece.color == (71, 71, 71):
             return True
     elif len(queens_on_board) > 0:
         if queens_on_board[0].color == (250, 250, 250) and state.turn == 7:
             return True
-        elif queens_on_board[0].color == (137, 137, 137) and state.turn == 7 and type(state.moving_piece) is Queen:
+        elif queens_on_board[0].color == (71, 71, 71) and state.turn == 7 and type(state.moving_piece) is Queen:
             return True
-        elif queens_on_board[0].color == (137, 137, 137) and state.turn == 8:
+        elif queens_on_board[0].color == (71, 71, 71) and state.turn == 8:
             return True
         elif queens_on_board[0].color == (250, 250, 250) and state.turn == 8 and type(state.moving_piece) is Queen:
             return True
@@ -130,6 +131,9 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
 
     elif type(state.moving_piece) is Beetle:
         return obeys_beetle_movement(state, old_tile, new_tile)
+
+    elif type(state.moving_piece) is Spider:
+        return obeys_spider_movement(state,old_tile,new_tile)
             
     else:
         return True  # makes testing easier
@@ -172,7 +176,8 @@ def path_exists(state, old_tile, new_tile):
             if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
-
+    vis = [x.axial_coords for x in visited]
+    print(vis)
     if new_tile in visited:
         return True
     else:
@@ -202,6 +207,13 @@ def obeys_ant_movement(state, old_tile, new_tile):
         print('Ant move criteria violated')
         return False
 
+def obeys_spider_movement(state, old_tile, new_tile):
+    if path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile): #add 3 move restriction
+        return True
+    else:
+        print('Ant move criteria violated')
+        return False
+
 def obeys_grasshopper_movement(state, old_tile, new_tile):
     #dist > 1, straight line, must hop over pieces
     dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
@@ -217,7 +229,8 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
                 if neighbor_tile not in visited:
                     visited.append(neighbor_tile)
                     queue.append(neighbor_tile)
-        for penultimate_tile in [x for x in new_tile.adjacent_tiles if x.has_pieces()]:
+        # have to check last tile seperately bc it will never have a piece
+        for penultimate_tile in [x for x in new_tile.adjacent_tiles if x.has_pieces()]: 
             if penultimate_tile in visited and is_straight_line(old_tile.axial_coords, new_tile.axial_coords):
                 return True
         else:

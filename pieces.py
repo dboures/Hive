@@ -2,7 +2,6 @@ import numpy as np
 import pygame as pg
 
 WHITE = (250, 250, 250)
-DARK = (137, 137, 137)
 
 
 class Piece:
