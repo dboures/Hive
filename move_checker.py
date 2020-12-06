@@ -99,14 +99,14 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
     #Refactor into piece class methods eventually
     elif type(state.moving_piece) is Queen:
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-        if dist == 1 and move_is_not_blocked(state, old_tile, new_tile):
+        if dist == 1 and move_is_not_blocked_or_jump(state, old_tile, new_tile):
             return True
         else:
             print('Queen move criteria violated')
             return False
 
     elif type(state.moving_piece) is Ant:
-        if path_exists(state, old_tile, new_tile) and move_is_not_blocked(state, old_tile, new_tile):
+        if obeys_ant_movement(state, old_tile, new_tile): 
             return True
         else:
             print('Ant move criteria violated')
@@ -137,24 +137,23 @@ def axial_distance(one, two):
     return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))
 
 
-def move_is_not_blocked(state, old_tile, new_tile):  # check for each pathfinding move
+def move_is_not_blocked_or_jump(state, old_tile, new_tile):  # check for each pathfinding move
+    dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
     old_adjacents_with_pieces = [
         x for x in old_tile.adjacent_tiles if x.has_pieces()]
     new_adjacents_with_pieces = [
         x for x in new_tile.adjacent_tiles if x.has_pieces()]
     overlap_tiles = [
         x for x in new_adjacents_with_pieces if x in old_adjacents_with_pieces]
-    if len(overlap_tiles) > 2:
-        print('move_is_not_blocked overlap error')
+
+    if dist == 1 and len(overlap_tiles) == 0:# restrict jumps, incomplete
+        print('cant jump gaps')
         return False
-    elif len(overlap_tiles) < 2:
-        return True
-    elif overlap_tiles[0].has_pieces() and overlap_tiles[1].has_pieces():
+    elif dist == 1 and len(overlap_tiles) == 2:
         print('Move is physically blocked')
         return False
     else:
         return True
-
 
 def path_exists(state, old_tile, new_tile):
 
@@ -164,7 +163,7 @@ def path_exists(state, old_tile, new_tile):
     while queue and new_tile not in visited:
         current_tile = queue.pop(0)
         for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and  (not x.has_pieces())]:
-            if neighbor_tile not in visited and move_is_not_blocked(state, current_tile, neighbor_tile):
+            if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
 
@@ -181,6 +180,11 @@ def is_straight_line(old_coords, new_coords):
 
     return (q1 == q2) or (r1 == r2) or ((-q1 - r1) == (-q2 - r2))
 
+def obeys_ant_movement(state, old_tile, new_tile):
+    if path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
+        return True
+    else:
+        return False
 
 def obeys_grasshopper_movement(state, old_tile, new_tile):
     #dist > 1, straight line, must hop over pieces
@@ -194,7 +198,7 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
             for neighbor_tile in [x for x in current_tile.adjacent_tiles 
                                             if x.has_pieces()
                                             and is_straight_line(old_tile.axial_coords, x.axial_coords)]:
-                if neighbor_tile not in visited and move_is_not_blocked(state, current_tile, neighbor_tile):
+                if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
                     visited.append(neighbor_tile)
                     queue.append(neighbor_tile)
 
@@ -209,7 +213,7 @@ def obeys_grasshopper_movement(state, old_tile, new_tile):
 
 def obeys_beetle_movement(state, old_tile, new_tile):
     dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
-    if dist == 1 and (move_is_not_blocked(state, old_tile, new_tile) or new_tile.has_pieces() or len(old_tile.pieces) > 1): 
+    if dist == 1 and (move_is_not_blocked_or_jump(state, old_tile, new_tile) or new_tile.has_pieces() or len(old_tile.pieces) > 1): 
         # cant slide into a blocked place but it can go up or down into one
         return True
     else:

@@ -70,7 +70,8 @@ while state.running:
                     tile = next(
                         (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                     q,r = tile.axial_coords
-                    print(q,r) # -q-r third cube coord
+                    print(q,r)
+                    #print([at.pieces for at in tile.adjacent_tiles]) # -q-r third cube coord
                     #print('turn #: ' + str(state.turn))
                 if event.key == pg.K_ESCAPE:
                     state.quit()
