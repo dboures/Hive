@@ -107,6 +107,39 @@ def move_obeys_queen_by_4(state):
     print('Queen by 4')
     return False
 
+def game_is_over(state):
+    # obtain queen tiles
+    # if white surronded and black surrounded -> draw
+    # elif white surrounded -> black win
+    #elif black surr -> white win
+    # else:
+    #     pass
+
+    white_surrounded = False
+    black_surrounded = False
+    for tile in state.get_tiles_with_pieces():
+        for piece in tile.pieces:
+            if type(piece) is Queen:
+                adjacent_tiles_with_pieces = [x for x in tile.adjacent_tiles if x.has_pieces()]
+                if len(adjacent_tiles_with_pieces) == 6:
+                    if piece.color == (250, 250, 250):
+                        white_surrounded = True
+                    elif piece.color == (71, 71, 71):
+                        black_surrounded = True
+                break
+    if white_surrounded and black_surrounded:
+        print('both surr')
+        return True            
+    elif white_surrounded:
+        print('white surr')
+        return True
+    elif black_surrounded:
+        print('black surrounded')
+        return True
+    else:
+        return False
+
+    
 
 def move_obeys_piece_movement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99, 99):

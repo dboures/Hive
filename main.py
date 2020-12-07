@@ -7,6 +7,7 @@ from start_menu import start_menu
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
+from move_checker import game_is_over
 
 WHITE = (250, 250, 250)
 
@@ -111,5 +112,12 @@ while state.running:
         pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
         pg.display.flip()
+
+        if game_is_over(state):
+            state.end_game()
+
+    while state.end_loop:
+        pass
+    #display ideally trasnparent menu and go back to the start once they click
 
     
