@@ -136,7 +136,7 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
         return obeys_spider_movement(state,old_tile,new_tile)
             
     else:
-        return True  # makes testing easier
+        return False 
 
 
 def axial_distance(one, two):
@@ -172,7 +172,7 @@ def path_exists(state, old_tile, new_tile):
 
     while queue and new_tile not in visited:
         current_tile = queue.pop(0)
-        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and  (not x.has_pieces())]:
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and (not x.has_pieces())]:
             if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
                 visited.append(neighbor_tile)
                 queue.append(neighbor_tile)
@@ -183,6 +183,34 @@ def path_exists(state, old_tile, new_tile):
     else:
         print('no path exists on hive edge')
         return False
+
+#don't like how this repeats code at all
+def spider_path_exists(state, old_tile, new_tile):
+    temp_piece = old_tile.pieces[-1]
+    old_tile.remove_piece()
+
+    queue = [] #list of lists
+    queue.append([old_tile])
+
+    while queue:
+        path = queue.pop(0)
+        current_tile = path[-1]
+        if current_tile == new_tile and (len(path) - 1 == 3):
+                old_tile.add_piece(temp_piece)
+                return True
+        
+        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and (not x.has_pieces())]:
+            if neighbor_tile not in path and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
+                print(neighbor_tile.axial_coords)
+                new_path = list(path)
+                new_path.append(neighbor_tile)
+                queue.append(new_path)
+        print('for cycle done')
+                
+    
+    print('no path exists on hive edge')
+    old_tile.add_piece(temp_piece)
+    return False
 
 
 def is_straight_line(old_coords, new_coords):
@@ -201,17 +229,17 @@ def obeys_queen_movement(state, old_tile, new_tile):
 
 
 def obeys_ant_movement(state, old_tile, new_tile):
-    if path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
+    if path_exists(state, old_tile, new_tile):
         return True
     else:
         print('Ant move criteria violated')
         return False
 
 def obeys_spider_movement(state, old_tile, new_tile):
-    if path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile): #add 3 move restriction
+    if spider_path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile): #add 3 move restriction
         return True
     else:
-        print('Ant move criteria violated')
+        print('Spider move criteria violated')
         return False
 
 def obeys_grasshopper_movement(state, old_tile, new_tile):
