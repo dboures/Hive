@@ -12,7 +12,7 @@ RULES = "RULES"
 OPTIONS = "OPTIONS"
 
 
-class Button:
+class StartButton:
     def __init__(self, text, rect):
         self.text = text
         self.rect = rect
@@ -54,9 +54,9 @@ def start_menu(screen, game_state, event):
     rect3 = pg.Rect(button_pos, (5/9) * HEIGHT, button_width, button_height)
 
     buttons = [
-        Button(START, rect1),
-        Button(OPTIONS, rect2),
-        Button(RULES, rect3),
+        StartButton(START, rect1),
+        StartButton(OPTIONS, rect2),
+        StartButton(RULES, rect3),
     ]
 
     if event.type == pg.MOUSEMOTION:
@@ -70,5 +70,42 @@ def start_menu(screen, game_state, event):
 
     for button in buttons:
         button.draw(screen)
+
+    pg.display.flip()
+
+def end_menu(screen, game_state, event):
+    WIDTH, HEIGHT = 880, 900
+
+    # button_width = WIDTH / 4.5
+    # button_height = HEIGHT / 10
+    # button_pos = (WIDTH/2) - (button_width/2)
+
+    # rect1 = pg.Rect(button_pos, (3/9) * HEIGHT, button_width, button_height)
+    # rect2 = pg.Rect(button_pos, (4/9) * HEIGHT, button_width, button_height)
+    # rect3 = pg.Rect(button_pos, (5/9) * HEIGHT, button_width, button_height)
+
+    # buttons = [
+    #     StartButton(START, rect1),
+    #     StartButton(OPTIONS, rect2),
+    #     StartButton(RULES, rect3),
+    # ]
+
+    # if event.type == pg.MOUSEMOTION:
+    #     for button in buttons:
+    #         button.highlight_if_hovered(event.pos)
+    # elif event.type == pg.MOUSEBUTTONDOWN:
+    #     for button in buttons:
+    #         button.run_if_clicked(event.pos, game_state)
+
+    # screen.fill((20, 50, 70))
+
+    s = pg.Surface((WIDTH,HEIGHT))  # the size of your rect
+    s.set_alpha(5)                # alpha level
+    s.fill((255,255,255))           # this fills the entire surface
+    screen.blit(s, (0,0))    # (0,0) are the top-left coordinates
+
+
+    # for button in buttons:
+    #     button.draw(screen)
 
     pg.display.flip()

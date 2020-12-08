@@ -173,8 +173,6 @@ def move_obeys_piece_movement(state, old_tile, new_tile):
 
 
 def axial_distance(one, two):
-    # straight moves give tile distance, but "down" two tiles gives 1.7s, not sure about that
-    # feel like it would be most useful to have a tile distance counted from the outside type function
     q1, r1 = one
     q2, r2 = two
     return np.sqrt((q1-q2)*(q1-q2) + (r1-r2)*(r1-r2) + ((q1-q2)*(r1-r2)))

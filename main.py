@@ -3,7 +3,7 @@ import numpy as np
 from tile import Tile, initialize_grid
 from move_checker import is_valid_move
 
-from start_menu import start_menu
+from menus import start_menu, end_menu
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
@@ -77,9 +77,7 @@ while state.running:
                     state.quit()
                     break
                 if event.key == pg.K_PAGEUP:
-                    tt = next(
-                        (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
-                    test(state, tt)
+                    state.end_game()
             if event.type == pg.MOUSEBUTTONDOWN:
                 state.click()
             if event.type == pg.MOUSEBUTTONUP:
@@ -117,7 +115,7 @@ while state.running:
             state.end_game()
 
     while state.end_loop:
-        pass
+        end_menu(screen, state, event)
     #display ideally trasnparent menu and go back to the start once they click
 
     
