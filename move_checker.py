@@ -128,13 +128,12 @@ def game_is_over(state):
                         black_surrounded = True
                 break
     if white_surrounded and black_surrounded:
-        print('both surr')
         return True            
     elif white_surrounded:
-        print('white surr')
+        state.winner = "BLACK"
         return True
     elif black_surrounded:
-        print('black surrounded')
+        state.winner = "WHITE"
         return True
     else:
         return False

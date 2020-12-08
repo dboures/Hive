@@ -14,8 +14,9 @@ class Game_State:
         #action attributes
         self.clicked = False
         self.moving_piece = None
-
         self.turn = 1
+        #other
+        self.winner = None
 
     def start_game(self):
         self.menu_loop = False
@@ -62,22 +63,6 @@ class Game_State:
             if tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
-
-    def game_is_over(self):
-        # obtain queen tiles
-        # if white surronded and black surrounded -> draw
-        # elif white surrounded -> black win
-        #elif black surr -> white win
-        # else:
-        #     pass
-
-        queen_tiles = []
-        for tile in self.get_tiles_with_pieces():
-            for piece in tile.pieces:
-                if type(piece) is Queen:
-                    queen_tiles.append(tile)
-                    break
-
 
     def update_adjacent_tiles(self):
         for tile in self.board_tiles:

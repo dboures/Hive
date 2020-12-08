@@ -18,10 +18,10 @@ class StartButton:
         self.rect = rect
         self.color = BLACK
 
-    def run_if_clicked(self, pos, game_state):
+    def run_if_clicked(self, pos, state):
         if self.rect.collidepoint(pos):
             if self.text == START:
-                game_state.start_game()
+                state.start_game()
                 return
             elif self.text == OPTIONS:
                 print('opts')
@@ -42,7 +42,7 @@ class StartButton:
         background.blit(font, self.rect)
 
 
-def start_menu(screen, game_state, event):
+def start_menu(screen, state, event):
     WIDTH, HEIGHT = screen.get_size()
 
     button_width = WIDTH / 4.5
@@ -64,7 +64,7 @@ def start_menu(screen, game_state, event):
             button.highlight_if_hovered(event.pos)
     elif event.type == pg.MOUSEBUTTONDOWN:
         for button in buttons:
-            button.run_if_clicked(event.pos, game_state)
+            button.run_if_clicked(event.pos, state)
 
     screen.fill((20, 50, 70))
 
@@ -73,8 +73,12 @@ def start_menu(screen, game_state, event):
 
     pg.display.flip()
 
-def end_menu(screen, game_state, event):
+def end_menu(screen, state, event):
     WIDTH, HEIGHT = 880, 900
+
+    clear_surface = pg.Surface((WIDTH,HEIGHT))  
+    clear_surface.set_alpha(5)         
+    clear_surface.fill((255,255,255)) 
 
     # button_width = WIDTH / 4.5
     # button_height = HEIGHT / 10
@@ -88,24 +92,35 @@ def end_menu(screen, game_state, event):
     #     StartButton(START, rect1),
     #     StartButton(OPTIONS, rect2),
     #     StartButton(RULES, rect3),
-    # ]
+    # ] 
 
     # if event.type == pg.MOUSEMOTION:
     #     for button in buttons:
     #         button.highlight_if_hovered(event.pos)
     # elif event.type == pg.MOUSEBUTTONDOWN:
     #     for button in buttons:
-    #         button.run_if_clicked(event.pos, game_state)
-
-    # screen.fill((20, 50, 70))
-
-    s = pg.Surface((WIDTH,HEIGHT))  # the size of your rect
-    s.set_alpha(5)                # alpha level
-    s.fill((255,255,255))           # this fills the entire surface
-    screen.blit(s, (0,0))    # (0,0) are the top-left coordinates
-
+    #         button.run_if_clicked(event.pos, state)
 
     # for button in buttons:
-    #     button.draw(screen)
+    #     button.draw(clear_surface)
+
+    # draw font
+
+
+
+    FONT = pg.font.SysFont("Times New Norman", 90)
+
+    if state.winner == "WHITE":
+        font = FONT.render("White Wins!", True, (131,31,250))
+    elif state.winner == "BLACK":
+        font = FONT.render("Black Wins!", True, (131,31,250))
+    else:
+        font = FONT.render("Draw", True, (131,31,250))
+    font.set_alpha(250)
+
+    clear_surface.blit(font, (450,450))
+    
+    screen.blit(clear_surface, (0,0))  
+          
 
     pg.display.flip()
