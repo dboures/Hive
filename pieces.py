@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from move_checker import axial_distance, move_is_not_blocked_or_jump, path_exists, spider_path_exists, is_straight_line
+from move_checker import axial_distance, move_is_not_blocked_or_jump, path_exists, is_straight_line
 
 WHITE = (250, 250, 250)
 
@@ -63,7 +63,7 @@ class Spider(Piece):
         surface.blit(self.image, pos)
 
     def move_is_valid(self, state, old_tile, new_tile):
-        if spider_path_exists(state, old_tile, new_tile) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
+        if path_exists(state, old_tile, new_tile, spider=True) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
             return True
         else:
             print('Spider move criteria violated')

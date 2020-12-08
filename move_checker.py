@@ -1,19 +1,19 @@
 import numpy as np
-from tile import Start_Tile, Inventory_Tile
-from pieces import Queen, Ant, Grasshopper, Beetle, Spider
+import tile
+import pieces
 
 
 def is_valid_move(state, old_tile, new_tile):
     base_move_check = (new_tile is not None
                        and new_tile.coords != old_tile.coords
-                       and ((not new_tile.has_pieces()) or type(state.moving_piece) is Beetle))
+                       and ((not new_tile.has_pieces()) or type(state.moving_piece) is pieces.Beetle))
     full_move_check = (base_move_check
                        and new_tile.is_hive_adjacent(state)
                        and move_does_not_break_hive(state, old_tile)
-                       and (state.moving_piece.is_valid_move or move_obeys_piece_placement(state, old_tile, new_tile) ))
+                       and (state.moving_piece.move_is_valid(state, old_tile, new_tile) or move_obeys_piece_placement(state, old_tile, new_tile) ))
     # first move
     if state.turn == 1:
-        if base_move_check and type(new_tile) is Start_Tile:
+        if base_move_check and type(new_tile) is tile.Start_Tile:
             return True
     # second
     elif state.turn == 2:
@@ -75,7 +75,7 @@ def queen_is_on_board(state, old_tile):
         for tile in state.get_tiles_with_pieces():
             for piece in tile.pieces:
                 print(piece.color)
-                if type(piece) is Queen and piece.color == color:
+                if type(piece) is pieces.Queen and piece.color == color:
                     return True
     print('cant move till queen is placed')
     return False
@@ -83,24 +83,24 @@ def move_obeys_queen_by_4(state):
     queens_on_board = []
     for tile in state.get_tiles_with_pieces():
         for piece in tile.pieces:
-            if type(piece) is Queen:
+            if type(piece) is pieces.Queen:
                 queens_on_board.append(piece)
                 
     if len(queens_on_board) == 2:
         return True
     elif len(queens_on_board) == 0:
-        if state.turn == 7 and type(state.moving_piece) is Queen and state.moving_piece.color == (250, 250, 250):
+        if state.turn == 7 and type(state.moving_piece) is pieces.Queen and state.moving_piece.color == (250, 250, 250):
             return True
-        elif state.turn == 8 and type(state.moving_piece) is Queen and state.moving_piece.color == (71, 71, 71):
+        elif state.turn == 8 and type(state.moving_piece) is pieces.Queen and state.moving_piece.color == (71, 71, 71):
             return True
     elif len(queens_on_board) > 0:
         if queens_on_board[0].color == (250, 250, 250) and state.turn == 7:
             return True
-        elif queens_on_board[0].color == (71, 71, 71) and state.turn == 7 and type(state.moving_piece) is Queen:
+        elif queens_on_board[0].color == (71, 71, 71) and state.turn == 7 and type(state.moving_piece) is pieces.Queen:
             return True
         elif queens_on_board[0].color == (71, 71, 71) and state.turn == 8:
             return True
-        elif queens_on_board[0].color == (250, 250, 250) and state.turn == 8 and type(state.moving_piece) is Queen:
+        elif queens_on_board[0].color == (250, 250, 250) and state.turn == 8 and type(state.moving_piece) is pieces.Queen:
             return True
     
     print('Queen by 4')
@@ -111,7 +111,7 @@ def game_is_over(state):
     black_surrounded = False
     for tile in state.get_tiles_with_pieces():
         for piece in tile.pieces:
-            if type(piece) is Queen:
+            if type(piece) is pieces.Queen:
                 adjacent_tiles_with_pieces = [x for x in tile.adjacent_tiles if x.has_pieces()]
                 if len(adjacent_tiles_with_pieces) == 6:
                     if piece.color == (250, 250, 250):
@@ -169,27 +169,7 @@ def move_is_not_blocked_or_jump(state, old_tile, new_tile):  # check for each pa
     else:
         return True
 
-def path_exists(state, old_tile, new_tile):
-
-    visited = [old_tile]  # List to keep track of visited nodes.
-    queue = [old_tile]  # Initialize a queue
-
-    while queue and new_tile not in visited:
-        current_tile = queue.pop(0)
-        for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and (not x.has_pieces())]:
-            if neighbor_tile not in visited and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
-                visited.append(neighbor_tile)
-                queue.append(neighbor_tile)
-    vis = [x.axial_coords for x in visited]
-    print(vis)
-    if new_tile in visited:
-        return True
-    else:
-        print('no path exists on hive edge')
-        return False
-
-#don't like how this repeats code at all
-def spider_path_exists(state, old_tile, new_tile):
+def path_exists(state, old_tile, new_tile,spider=False):
     temp_piece = old_tile.pieces[-1]
     old_tile.remove_piece()
 
@@ -199,10 +179,14 @@ def spider_path_exists(state, old_tile, new_tile):
     while queue:
         path = queue.pop(0)
         current_tile = path[-1]
-        if current_tile == new_tile and (len(path) - 1 == 3):
+        if spider:
+            if current_tile == new_tile and (len(path) - 1 == 3):
                 old_tile.add_piece(temp_piece)
                 return True
-        
+        elif current_tile == new_tile:
+                old_tile.add_piece(temp_piece)
+                return True
+
         for neighbor_tile in [x for x in current_tile.adjacent_tiles if x.is_hive_adjacent(state) and (not x.has_pieces())]:
             if neighbor_tile not in path and move_is_not_blocked_or_jump(state, current_tile, neighbor_tile):
                 print(neighbor_tile.axial_coords)
@@ -215,7 +199,6 @@ def spider_path_exists(state, old_tile, new_tile):
     print('no path exists on hive edge')
     old_tile.add_piece(temp_piece)
     return False
-
 
 def is_straight_line(old_coords, new_coords):
     q1, r1 = old_coords
