@@ -88,7 +88,7 @@ class EndButton:
     def run_if_clicked(self, pos, state):
         if self.font_rect.collidepoint(pos):
             if self.text == NEWGAME:
-                state.new_game()
+                state.play_again()
                 return
             elif self.text == QUIT:
                 state.quit()

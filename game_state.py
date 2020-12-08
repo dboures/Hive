@@ -7,6 +7,7 @@ class Game_State:
         self.menu_loop = True
         self.main_loop = False
         self.end_loop = False
+        self.play_new_game = False
         #board attributes
         self.board_tiles = tiles
         self.white_inventory = white_inventory
@@ -27,8 +28,6 @@ class Game_State:
         self.end_loop = True
 
     def new_game(self):
-        #clear the board
-        
         self.main_loop = True
         self.end_loop = False
 
@@ -39,6 +38,10 @@ class Game_State:
         self.menu_loop = False
         self.main_loop = False
         self.end_loop = False
+    
+    def play_again(self):
+        self.play_new_game = True
+        self.quit()
 
     def add_moving_piece(self, piece):
         self.moving_piece = piece
