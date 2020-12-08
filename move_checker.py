@@ -11,11 +11,9 @@ def is_valid_move(state, old_tile, new_tile):
                        and new_tile.is_hive_adjacent(state)
                        and move_does_not_break_hive(state, old_tile)
                        and (state.moving_piece.move_is_valid(state, old_tile, new_tile) or move_obeys_piece_placement(state, old_tile, new_tile) ))
-    # first move
     if state.turn == 1:
         if base_move_check and type(new_tile) is tile.Start_Tile:
             return True
-    # second
     elif state.turn == 2:
         if (base_move_check
                 and new_tile.is_hive_adjacent(state)):
@@ -131,7 +129,6 @@ def game_is_over(state):
         return False
 
     
-
 def move_obeys_piece_placement(state, old_tile, new_tile):
     if old_tile.axial_coords == (99, 99):
         new_tile_adjacents_with_pieces = [

@@ -1,4 +1,5 @@
 import pygame as pg
+import webbrowser
 
 # helpful
 # https://stackoverflow.com/questions/51580173/how-to-implement-button-interaction-for-main-menu-pygame
@@ -29,7 +30,7 @@ class StartButton:
             elif self.text == OPTIONS:
                 print('opts')
             elif self.text == RULES:
-                print('rules')
+                open_rules()
 
     def highlight_if_hovered(self, pos):
         if self.rect.collidepoint(pos):
@@ -129,6 +130,8 @@ def end_menu(screen, state, event):
     clear_surface.blit(wins, wins_rect)
     
     screen.blit(clear_surface, (0,0))  
-          
 
     pg.display.flip()
+
+def open_rules():
+    webbrowser.open("https://www.ultraboardgames.com/hive/game-rules.php")

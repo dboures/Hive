@@ -48,6 +48,8 @@ class Tile:
         self.pieces.pop(-1)
         if self.has_pieces():
             self.color = self.pieces[-1].color
+        elif type(self) is Inventory_Tile:
+            pass
         else:
             self.color = WHITE
 
