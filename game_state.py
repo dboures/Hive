@@ -26,10 +26,18 @@ class Game_State:
         self.main_loop = False
         self.end_loop = True
 
+    def new_game(self):
+        #clear the board
+        self.main_loop = True
+        self.end_loop = False
+
+        self.turn = 1
+
     def quit(self):
         self.running = False
         self.menu_loop = False
         self.main_loop = False
+        self.end_loop = False
 
     def add_moving_piece(self, piece):
         self.moving_piece = piece

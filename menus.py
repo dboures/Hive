@@ -44,35 +44,6 @@ class StartButton:
         pg.draw.rect(background, self.color, self.rect)
         background.blit(font, self.rect)
 
-class EndButton:
-    def __init__(self, text, rect):
-        self.text = text
-        self.rect = rect
-        self.color = BLACK
-
-    def run_if_clicked(self, pos, state):
-        if self.rect.collidepoint(pos):
-            if self.text == NEWGAME:
-                state.new_game()
-                return
-            elif self.text == EXIT:
-                state.quit()
-                return
-
-    # def highlight_if_hovered(self, pos):
-    #     if self.rect.collidepoint(pos):
-    #         self.color = HOVER_COLOR
-    #     else:
-    #         self.color = BLACK
-
-    def draw(self, background):
-        FONT = pg.font.SysFont("Times New Norman", 60)
-        font = FONT.render(self.text, True, WHITE)
-
-        pg.draw.rect(background, self.color, self.rect)
-        background.blit(font, self.rect)
-
-
 def start_menu(screen, state, event):
     WIDTH, HEIGHT = screen.get_size()
 
@@ -104,43 +75,37 @@ def start_menu(screen, state, event):
 
     pg.display.flip()
 
+class EndButton:
+    def __init__(self, text, pos):
+        self.text = text
+
+        font = pg.font.SysFont("Times New Norman", 90)
+        self.FONT = font.render(self.text, True, (131,31,250))
+        self.FONT.set_alpha(250)
+        self.font_rect = self.FONT.get_rect(center=pos)
+
+    def run_if_clicked(self, pos, state):
+        if self.font_rect.collidepoint(pos):
+            if self.text == NEWGAME:
+                state.new_game()
+                return
+            elif self.text == QUIT:
+                state.quit()
+                return
+
+    def draw(self, background):
+        background.blit(self.FONT, self.font_rect)
+
 def end_menu(screen, state, event):
     WIDTH, HEIGHT = 880, 900
 
     clear_surface = pg.Surface((WIDTH,HEIGHT))  
     clear_surface.set_alpha(5)         
     clear_surface.fill((255,255,255)) 
-
-    # button_height = HEIGHT / 4
-    # button_width = WIDTH / 4.5
-    # button_pos = (WIDTH/2) - (button_width/2)
-
-    # rect1 = pg.Rect(button_pos, (2/4) * HEIGHT, button_width, button_height)
-    # rect2 = pg.Rect(button_pos, (3/4) * HEIGHT, button_width, button_height)
-
-    # buttons = [
-    #     StartButton(NEWGAME, rect1),
-    #     StartButton(QUIT, rect2),
-    # ]
-
-    # if event.type == pg.MOUSEMOTION:
-    #     pass
-    #     # for button in buttons:
-    #     #     button.highlight_if_hovered(event.pos)
-
-    # for button in buttons:
-    #     button.draw(clear_surface)
-
-    # draw font
-    new_game_font = pg.font.SysFont("Times New Norman", 90)
-    new_game = new_game_font.render(NEWGAME, True, (131,31,250))
-    new_game.set_alpha(250)
-    new_game_rect = new_game.get_rect(center=(WIDTH/2, HEIGHT/2))
-
-    quit_game_font = pg.font.SysFont("Times New Norman", 90)
-    quit_game = quit_game_font.render(QUIT, True, (131,31,250))
-    quit_game.set_alpha(250)
-    quit_game_rect = quit_game.get_rect(center=(WIDTH/2, 0.65*HEIGHT))
+    buttons = [
+        EndButton(NEWGAME, (WIDTH/2, HEIGHT/2)),
+        EndButton(QUIT, (WIDTH/2, 0.65*HEIGHT))
+        ]
 
     title_font = pg.font.SysFont("Times New Norman", 120)
 
@@ -153,8 +118,14 @@ def end_menu(screen, state, event):
     wins.set_alpha(250)
     wins_rect = wins.get_rect(center=(WIDTH/2, HEIGHT/8))
 
-    clear_surface.blit(new_game, new_game_rect)
-    clear_surface.blit(quit_game, quit_game_rect)
+
+    if event.type == pg.MOUSEBUTTONDOWN:
+        for button in buttons:
+            button.run_if_clicked(event.pos, state)
+
+    for button in buttons:
+        button.draw(clear_surface)
+
     clear_surface.blit(wins, wins_rect)
     
     screen.blit(clear_surface, (0,0))  

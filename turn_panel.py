@@ -7,7 +7,7 @@ BLACK = (71, 71, 71)
 WHITE = (250, 250, 250)
 
 # white is on the left
-class Turn_Panel:
+class Turn_Panel: #Once we get a client, want to remind players what color they are
     def __init__(self, background, state):
         WIDTH, HEIGHT = background.get_size()
 

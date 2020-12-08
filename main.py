@@ -106,8 +106,8 @@ while state.running:
         if state.moving_piece:
             draw_drag(background, pos, state.moving_piece)
         turn_indicator.draw_turn_panel(background, state)
-        pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
-        pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
+        # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
+        # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
         screen.blit(background, (0, 0))
         pg.display.flip()
 
@@ -115,7 +115,12 @@ while state.running:
             state.end_game()
 
     while state.end_loop:
-        end_menu(screen, state, event)
+        end_menu(screen, state, event) # drawing takes precedence over the close window button
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                state.quit()
+                break
+        
     #display ideally trasnparent menu and go back to the start once they click
 
     
