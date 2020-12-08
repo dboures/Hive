@@ -69,9 +69,15 @@ class Game_State:
         else:
             return False
     
-    def get_tiles_with_pieces(self):
+    def get_tiles_with_pieces(self, include_inventory=False):
         tiles = []
         for tile in self.board_tiles:
-            if tile.has_pieces() and type(tile) is not Inventory_Tile:
+            if include_inventory:
+                if tile.has_pieces():
+                    tiles.append(tile)
+            elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
+
+
+    

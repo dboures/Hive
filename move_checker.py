@@ -203,4 +203,32 @@ def is_straight_line(old_coords, new_coords):
 
     return (q1 == q2) or (r1 == r2) or ((-q1 - r1) == (-q2 - r2))
 
+def player_has_no_moves(state): # seems expensive, but doesn't really slow anything down
+        if state.turn % 2 == 1:
+            color = (250, 250, 250)
+        elif state.turn % 2 == 0:
+            color = (71, 71, 71)
+
+        hive_tiles = state.get_tiles_with_pieces(include_inventory=True)
+        
+        player_piece_tiles = [tile for tile in hive_tiles if tile.pieces[-1].color == color]
+        #print([x.pieces for x in player_piece_tiles])
+        open_adjacent_tiles = []
+        for tile in hive_tiles:
+            hive_adjacent_tiles = tile.adjacent_tiles
+            for HA_tile in hive_adjacent_tiles:
+                if HA_tile not in open_adjacent_tiles and not HA_tile.has_pieces():
+                    open_adjacent_tiles.append(HA_tile)
+
+        #print([x.axial_coords for x in open_adjacent_tiles])
+
+        for old_tile in player_piece_tiles:
+            for new_tile in open_adjacent_tiles:
+                print('tile')
+                if is_valid_move(state, old_tile, new_tile):
+                    return False
+        
+        return True
+        
+
 

@@ -1,15 +1,13 @@
 import pygame as pg
 import numpy as np
 from tile import Tile, initialize_grid
-from move_checker import is_valid_move
-
+from move_checker import is_valid_move, game_is_over, player_has_no_moves
 from menus import start_menu, end_menu
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
-from move_checker import game_is_over
 
-def game():
+def Hive():
     print('new game')
     WHITE = (250, 250, 250)
 
@@ -78,6 +76,10 @@ def game():
                         if is_valid_move(state, old_tile, new_tile):
                             old_tile.move_piece(new_tile)
                             state.next_turn()
+                            if player_has_no_moves(state):
+                                print('player has no moves')
+                                state.next_turn()
+
                     state.remove_moving_piece()
 
             # only draw tiles once in a for loop
