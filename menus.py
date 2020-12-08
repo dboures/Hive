@@ -108,17 +108,18 @@ def end_menu(screen, state, event):
 
 
 
-    FONT = pg.font.SysFont("Times New Norman", 90)
+    title_font = pg.font.SysFont("Times New Norman", 90)
 
     if state.winner == "WHITE":
-        font = FONT.render("White Wins!", True, (131,31,250))
+        wins = title_font.render("White Wins!", True, (131,31,250))
     elif state.winner == "BLACK":
-        font = FONT.render("Black Wins!", True, (131,31,250))
+        wins = title_font.render("Black Wins!", True, (131,31,250))
     else:
-        font = FONT.render("Draw", True, (131,31,250))
-    font.set_alpha(250)
+        wins = title_font.render("Draw", True, (131,31,250))
+    wins.set_alpha(250)
+    wins_rect = wins.get_rect(center=(WIDTH/2, HEIGHT/10))
 
-    clear_surface.blit(font, (450,450))
+    clear_surface.blit(wins, wins_rect)
     
     screen.blit(clear_surface, (0,0))  
           
