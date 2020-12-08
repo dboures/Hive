@@ -28,6 +28,7 @@ class Game_State:
 
     def new_game(self):
         #clear the board
+        
         self.main_loop = True
         self.end_loop = False
 
@@ -71,7 +72,3 @@ class Game_State:
             if tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
-
-    def update_adjacent_tiles(self):
-        for tile in self.board_tiles:
-            tile.set_adjacent_tiles(self.board_tiles)

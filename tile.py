@@ -20,28 +20,11 @@ class Tile:
         else:
             self.pieces = []
 
-        # selector = np.random.randint(1, 50)
-        # if selector == 1:
-        #     self.add_piece(Queen())
-        # elif selector == 2:
-        #     self.add_piece(Grasshopper())
-        # elif selector == 3:
-        #     self.add_piece(Spider())
-        # elif selector == 4:
-        #     self.add_piece(Beetle())
-        # elif selector == 5:
-        #     self.add_piece(Ant())
-
-        # color = np.random.randint(1,3)
-        # if color > 1:
-        #     self.color = DARK
-
-    def draw(self, surface, pos, clicked=False):  # pos to None as default?
+    def draw(self, surface, pos, clicked=False):
         # if mouse, determine select or click then draw
         if self.under_mouse(pos):
             if clicked:
                 pg.draw.polygon(surface, (250, 1, 1), self.hex)
-                #print(self.axial_coords)
             else:
                 pg.draw.polygon(surface, (250, 1, 1), self.hex_select)
                 pg.draw.polygon(surface, self.color, self.hex)
@@ -69,8 +52,6 @@ class Tile:
             self.color = WHITE
 
     def move_piece(self, new_tile):
-        #print(self.axial_coords)
-        #print(self.pieces)
         new_tile.add_piece(self.pieces[-1])
         self.remove_piece()
 
@@ -149,5 +130,8 @@ def initialize_grid(height, width, radius): #as far as intuitiveness goes, this 
                     tiles.append(Start_Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE, None))
                 else:
                     tiles.append(Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE))
+
+    for tile in tiles:
+        tile.set_adjacent_tiles(tiles)
     
     return tiles

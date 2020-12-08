@@ -31,17 +31,14 @@ pg.display.set_caption("Hive")
 icon = pg.image.load('icon.png')
 pg.display.set_icon(icon)
 
-
+#group these into an initialize function somewhow, so we can reinitialize when newgame is hit
 state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
-state.update_adjacent_tiles() #needs refactoring
 inv_white = Inventory_Frame(background, (0, 158), state, white=True)
 inv_dark = Inventory_Frame(background, (440, 158), state, white=False)
 turn_indicator = Turn_Panel(background, state)
 
 
-def draw_drag(background, pos, piece=None):  # move this somewhere??
-
-    # blit in bug?selected_rect = pygame.Rect(BOARD_POS[0] + selected_piece[1] * TILESIZE, BOARD_POS[1] + selected_piece[2] * TILESIZE, TILESIZE, TILESIZE)
+def draw_drag(background, pos, piece=None):
     pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
 
 def test(state, tile):
@@ -120,7 +117,6 @@ while state.running:
             if event.type == pg.QUIT:
                 state.quit()
                 break
-        
-    #display ideally trasnparent menu and go back to the start once they click
+
 
     
