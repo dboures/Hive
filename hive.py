@@ -2,7 +2,7 @@ import pygame as pg
 import numpy as np
 from tile import Tile, initialize_grid
 from move_checker import is_valid_move, game_is_over, player_has_no_moves
-from menus import start_menu, end_menu
+from menus import start_menu, end_menu, no_move_popup
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
@@ -45,6 +45,13 @@ def Hive():
                     break
                 start_menu(screen, state, event)
 
+        while state.move_popup_loop:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    state.quit()
+                    break
+                no_move_popup(screen, background, state, event)
+
         while state.main_loop:
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
@@ -63,7 +70,7 @@ def Hive():
                         state.quit()
                         break
                     if event.key == pg.K_PAGEUP:
-                        state.end_game()
+                        state.open_popup()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     state.click()
                 if event.type == pg.MOUSEBUTTONUP:
@@ -78,7 +85,7 @@ def Hive():
                             state.next_turn()
                             if player_has_no_moves(state):
                                 print('player has no moves')
-                                state.next_turn()
+                                state.open_popup()
 
                     state.remove_moving_piece()
 
@@ -122,4 +129,6 @@ def test(state, tile):
         #     return True
         print('Test')
         #return False
+
+
     

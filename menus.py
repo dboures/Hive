@@ -135,3 +135,43 @@ def end_menu(screen, state, event):
 
 def open_rules():
     webbrowser.open("https://www.ultraboardgames.com/hive/game-rules.php")
+
+def no_move_popup(screen, surface, state, event):
+    WIDTH, HEIGHT = screen.get_size()
+
+    window_width = WIDTH / 2
+    window_height = HEIGHT / 3
+
+    clear_surface = pg.Surface((window_width,window_height))  
+    clear_surface.set_alpha(5)         
+    clear_surface.fill((220,220,220)) 
+
+    popup_font = pg.font.SysFont("Times New Norman", 32)
+   
+    if state.turn % 2 == 1:
+        no_move = popup_font.render("White has no moves", True, (131,31,250))
+        turn_skipped = popup_font.render("White turn is skipped", True, (131,31,250)) 
+    else:
+        no_move = popup_font.render("Black has no moves,", True, (131,31,250))
+        turn_skipped = popup_font.render("Black turn is skipped", True, (131,31,250))
+    close = popup_font.render("Press the space bar to close this message", True, (131,31,250))
+
+    close.set_alpha(250)
+    no_move.set_alpha(250)
+    turn_skipped.set_alpha(250)
+
+    close_rect = close.get_rect(center=(window_width / 2, window_height / 2 + (window_height / 4)))
+    no_move_rect = no_move.get_rect(center=(window_width / 2, window_height / 2 - (window_height / 3)))
+    turn_skipped_rect = turn_skipped.get_rect(center=(window_width / 2, window_height / 2 - (window_height / 5)))
+
+   
+    clear_surface.blit(no_move, no_move_rect)
+    clear_surface.blit(turn_skipped, turn_skipped_rect)
+    clear_surface.blit(close, close_rect)
+
+    if event.type == pg.KEYDOWN:
+        if event.key == pg.K_SPACE:
+            state.close_popup()
+
+    screen.blit(clear_surface, (WIDTH / 4, HEIGHT / 4))
+    pg.display.flip()

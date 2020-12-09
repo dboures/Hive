@@ -2,12 +2,13 @@ from tile import Inventory_Tile
 
 class Game_State:
     def __init__(self, tiles = [], white_inventory=None, black_inventory=None):
-        #menu attributes
+        #state attributes
         self.running = True
         self.menu_loop = True
         self.main_loop = False
         self.end_loop = False
         self.play_new_game = False
+        self.move_popup_loop = False
         #board attributes
         self.board_tiles = tiles
         self.white_inventory = white_inventory
@@ -42,6 +43,15 @@ class Game_State:
     def play_again(self):
         self.play_new_game = True
         self.quit()
+
+    def open_popup(self):
+        self.main_loop = False
+        self.move_popup_loop = True
+
+    def close_popup(self):
+        self.main_loop = True
+        self.move_popup_loop = False
+        self.next_turn()
 
     def add_moving_piece(self, piece):
         self.moving_piece = piece
