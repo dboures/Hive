@@ -7,6 +7,8 @@ from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 
+#need a client somewhere
+
 def Hive():
     print('new game')
     WHITE = (250, 250, 250)
