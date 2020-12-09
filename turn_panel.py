@@ -8,8 +8,8 @@ WHITE = (250, 250, 250)
 
 # white is on the left
 class Turn_Panel: #Once we get a client, want to remind players what color they are
-    def __init__(self, background, state):
-        WIDTH, HEIGHT = background.get_size()
+    def __init__(self):
+        WIDTH, HEIGHT = 880, 900
 
         outline_width = WIDTH / 4
         outline_height = 40
@@ -24,7 +24,7 @@ class Turn_Panel: #Once we get a client, want to remind players what color they 
         self.inner_panel = pg.Rect(
             self.inner_left, self.inner_top, self.inner_width, self.inner_height)
 
-    def draw_turn_panel(self, background, state):
+    def draw(self, background, state):
         FONT = pg.font.SysFont("Times New Norman", 32)
         if state.turn % 2 == 1:
             font = FONT.render(

@@ -1,4 +1,7 @@
 from tile import Inventory_Tile
+from pieces import Queen, Grasshopper, Spider, Beetle, Ant
+from inventory_frame import Inventory_Frame
+from turn_panel import Turn_Panel
 
 class Game_State:
     def __init__(self, tiles = [], white_inventory=None, black_inventory=None):
@@ -9,10 +12,13 @@ class Game_State:
         self.end_loop = False
         self.play_new_game = False
         self.move_popup_loop = False
-        #board attributes
-        self.board_tiles = tiles
-        self.white_inventory = white_inventory
-        self.black_inventory = black_inventory
+        #board 
+        self.white_inventory = Inventory_Frame((0, 158), white=True)
+        self.black_inventory = Inventory_Frame((440, 158), white=False)
+        self.board_tiles = tiles + self.white_inventory.tiles + self.black_inventory.tiles
+
+        self.turn_panel = Turn_Panel()
+
         #action attributes
         self.clicked = False
         self.moving_piece = None
@@ -88,6 +94,3 @@ class Game_State:
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
-
-
-    

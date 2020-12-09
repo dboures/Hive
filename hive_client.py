@@ -6,6 +6,7 @@ from menus import start_menu, end_menu, no_move_popup
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
+from network import Network
 
 #need a client somewhere
 
@@ -35,10 +36,9 @@ def Hive():
 
     #group these into an initialize function somewhow, so we can reinitialize when newgame is hit
     state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
-    inv_white = Inventory_Frame(background, (0, 158), state, white=True)
-    inv_dark = Inventory_Frame(background, (440, 158), state, white=False)
-    turn_indicator = Turn_Panel(background, state)
 
+    #probably want to pass the state object back and forth between clients and the server
+    #make it so that you can't do anything when it's not your turn (client is assigned to player)
     while state.running:
         while state.menu_loop:
             for event in pg.event.get():
@@ -93,8 +93,8 @@ def Hive():
 
             # only draw tiles once in a for loop
             background.fill((180, 180, 180))
-            inv_white.draw_inventory_frame(background, pos)
-            inv_dark.draw_inventory_frame(background, pos)
+            state.white_inventory.draw(background, pos)
+            state.black_inventory.draw(background, pos)
             for tile in state.board_tiles:
                 if state.clicked:
                     tile.draw(background, pos, state.clicked)
@@ -104,7 +104,7 @@ def Hive():
                     tile.draw(background, pos)
             if state.moving_piece:
                 draw_drag(background, pos, state.moving_piece)
-            turn_indicator.draw_turn_panel(background, state)
+            state.turn_panel.draw(background, state)
             # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
             # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
             screen.blit(background, (0, 0))
@@ -133,4 +133,11 @@ def test(state, tile):
         #return False
 
 
-    
+def main():
+    run_game = True
+    n = Network()
+    while run_game:
+         run_game = Hive()
+
+if __name__ == "__main__":
+    main()
