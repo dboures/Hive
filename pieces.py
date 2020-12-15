@@ -7,7 +7,6 @@ WHITE = (250, 250, 250)
 
 class Piece:
     def __init__(self, color=WHITE):
-        self.image = pg.image.load('images/{}.png'.format(type(self).__name__))
         self.old_pos = None
         self.color = color
 
@@ -17,15 +16,15 @@ class Piece:
     def move_is_valid(self, state, old_tile, new_tile):
         pass
 
-
 class Queen(Piece):
     def __init__(self, color=WHITE):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         x, y = hex_pos
         pos = (x - 16, y - 14)
-        surface.blit(self.image, pos)
+        surface.blit(image, pos)
 
     def move_is_valid(self, state, old_tile, new_tile):
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
@@ -40,9 +39,10 @@ class Ant(Piece):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         x, y = hex_pos
         pos = (x - 16, y - 17)
-        surface.blit(self.image, pos)
+        surface.blit(image, pos)
 
     def move_is_valid(self, state, old_tile, new_tile):
         if path_exists(state, old_tile, new_tile):
@@ -56,9 +56,10 @@ class Spider(Piece):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         x, y = hex_pos
         pos = (x - 16, y - 17)
-        surface.blit(self.image, pos)
+        surface.blit(image, pos)
 
     def move_is_valid(self, state, old_tile, new_tile):
         if path_exists(state, old_tile, new_tile, spider=True) and move_is_not_blocked_or_jump(state, old_tile, new_tile):
@@ -72,9 +73,10 @@ class Beetle(Piece):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         x, y = hex_pos
         pos = (x - 16, y - 16)
-        surface.blit(self.image, pos)
+        surface.blit(image, pos)
 
     def move_is_valid(self, state, old_tile, new_tile):
         dist = axial_distance(old_tile.axial_coords, new_tile.axial_coords)
@@ -90,9 +92,10 @@ class Grasshopper(Piece):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         x, y = hex_pos
         pos = (x - 12, y - 14)
-        surface.blit(self.image, pos)
+        surface.blit(image, pos)
     
     def move_is_valid(self, state, old_tile, new_tile):
         #dist > 1, straight line, must hop over pieces
