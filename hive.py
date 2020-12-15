@@ -6,8 +6,6 @@ from menus import start_menu, end_menu, no_move_popup
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
-from network import Network
-
 #need a client somewhere
 
 def Hive():
@@ -100,12 +98,12 @@ def Hive():
                 if state.clicked:
                     tile.draw(background, pos, state.clicked)
                     if tile.under_mouse(pos) and state.moving_piece is None and tile.has_pieces():
-                        state.moving_piece = tile.pieces[-1]
+                        state.add_moving_piece(tile.pieces[-1])
                 else:
                     tile.draw(background, pos)
             if state.moving_piece:
                 draw_drag(background, pos, state.moving_piece)
-            state.turn_panel.draw(background, state)
+            state.turn_panel.draw(background, state.turn)
             # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
             # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
             screen.blit(background, (0, 0))
@@ -136,7 +134,6 @@ def test(state, tile):
 
 def main():
     run_game = True
-    n = Network()
     while run_game:
          run_game = Hive()
 
