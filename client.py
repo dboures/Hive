@@ -63,7 +63,7 @@ def main():
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_TAB:
                         tile = next(
-                            (tile for tile in client.state.board_tiles if tile.under_mouse(pos)), None)
+                            (tile for tile in client.board_tiles if tile.under_mouse(pos)), None)
                         q,r = tile.axial_coords
                         print(q,r)
                     if event.key == pg.K_ESCAPE:
@@ -73,28 +73,28 @@ def main():
                     # if event.key == pg.K_PAGEUP:
                     #     client.state.open_popup()
                 if event.type == pg.MOUSEBUTTONDOWN:
-                    client.state.click()
+                    client.click()
                 if event.type == pg.MOUSEBUTTONUP:
-                    client.state.unclick()
+                    client.unclick()
                     
 
-                    if client.state.moving_piece and client.state.is_player_turn():
+                    if client.moving_piece and client.is_player_turn():
                         old_tile = next(
-                            tile for tile in client.state.board_tiles if  (tile.has_pieces() and tile.pieces[-1] == client.state.moving_piece))
+                            tile for tile in client.board_tiles if  (tile.has_pieces() and tile.pieces[-1] == client.moving_piece))
                         new_tile = next(
-                            (tile for tile in client.state.board_tiles if tile.under_mouse(pos)), None)
+                            (tile for tile in client.board_tiles if tile.under_mouse(pos)), None)
                         #send old_tile, new_tile
-                        if is_valid_move(client.state, old_tile, new_tile):
+                        if is_valid_move(client, old_tile, new_tile): # gonna be an issue
                             old_tile.move_piece(new_tile)
-                            client.state.next_turn()
-                            if player_has_no_moves(client.state):
-                                print('player has no moves')
-                                client.state.open_popup()
+                            client.next_turn()
+                            # if player_has_no_moves(client):
+                            #     print('player has no moves')
+                            #     client.open_popup()
 
-                    client.state.remove_moving_piece()
+                    client.remove_moving_piece()
 
                     # send client.state to server, for now server will just accept
-                    proposed_state = State(client.state.turn + 1, client.state.board_tiles)
+                    proposed_state = State(client.turn + 1, client.state.board_tiles)
                     client.send(proposed_state)
 
             # only draw tiles once in a for loop
@@ -102,16 +102,16 @@ def main():
             white_inventory.draw(background, pos)
             black_inventory.draw(background, pos)
             
-            for tile in client.state.board_tiles:
-                if client.state.clicked:
-                    tile.draw(background, pos, client.state.clicked)
-                    if tile.under_mouse(pos) and client.state.moving_piece is None and tile.has_pieces():
-                        client.state.moving_piece = tile.pieces[-1]
+            for tile in client.board_tiles:
+                if client.clicked:
+                    tile.draw(background, pos, client.clicked)
+                    if tile.under_mouse(pos) and client.moving_piece is None and tile.has_pieces():
+                        client.moving_piece = tile.pieces[-1]
                 else:
                     tile.draw(background, pos)
-            if client.state.moving_piece:
-                draw_drag(background, pos, client.state.moving_piece)
-            turn_panel.draw(background, client.state.turn)
+            if client.moving_piece:
+                draw_drag(background, pos, client.moving_piece)
+            turn_panel.draw(background, client.turn)
             screen.blit(background, (0, 0))
             pg.display.flip()
 

@@ -16,6 +16,8 @@ class Client:# need to know which player we are
         #pygame vars
         self.clicked = False
         self.moving_piece = None
+        self.turn = self.state.turn
+        self.board_tiles = self.state.board_tiles
 
     def connect(self):
         try:
@@ -59,6 +61,17 @@ class Client:# need to know which player we are
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
+
+    def is_player_turn(self):
+        if self.moving_piece.color == (250, 250, 250) and self.turn % 2 == 1:
+            return True
+        elif self.moving_piece.color == (71, 71, 71) and self.turn % 2 == 0:
+            return True
+        else:
+            return False
+
+    def next_turn(self):
+        self.turn += 1
 
 class State:
     def __init__(self, turn, board_tiles):
