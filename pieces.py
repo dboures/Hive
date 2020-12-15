@@ -35,8 +35,6 @@ class Queen(Piece):
             print('Queen move criteria violated')
             return False
 
-
-
 class Ant(Piece):
     def __init__(self, color=WHITE):
         super().__init__(color)
@@ -86,7 +84,6 @@ class Beetle(Piece):
         else:
             print('Beetle move criteria violated')
             return False
-
 
 class Grasshopper(Piece):
     def __init__(self, color=WHITE):
