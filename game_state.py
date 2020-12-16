@@ -13,11 +13,11 @@ class Game_State:
         self.play_new_game = False
         self.move_popup_loop = False
         #board 
-        self.white_inventory = Inventory_Frame((0, 158), white=True)
-        self.black_inventory = Inventory_Frame((440, 158), white=False)
-        self.board_tiles = tiles + self.white_inventory.tiles + self.black_inventory.tiles
+        white_inventory = Inventory_Frame((0, 158), white=True)
+        black_inventory = Inventory_Frame((440, 158), white=False)
+        self.board_tiles = tiles + white_inventory.tiles + black_inventory.tiles
 
-        self.turn_panel = Turn_Panel()
+        self.turn_panel = Turn_Panel() # can optimize pickling and sending by removing this
 
         #action attributes
         self.clicked = False
