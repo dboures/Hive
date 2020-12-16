@@ -32,7 +32,7 @@ class Inventory_Frame:
         stock_width = inner_width / 5
 
         self.tile_rects = []
-        self.tiles = []
+        self.tiles = [] # pieces move, tiles dont
 
         if white:
             self.color = WHITE
@@ -96,3 +96,4 @@ class Inventory_Frame:
 
         background.blit(self.font, self.title_rect)
         pg.display.flip()
+

@@ -4,7 +4,8 @@ from tile import Tile, Inventory_Tile, initialize_grid
 from move_checker import is_valid_move, game_is_over, player_has_no_moves
 from menus import start_menu, end_menu, no_move_popup
 from game_state import Game_State
-from networking import Client, State
+from networking import Client
+import move
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 import socket
@@ -42,76 +43,74 @@ background.fill((0, 0, 0))
 
 def main():
     client = Client()
-    print(client.state)
-    print(len(client.state.board_tiles))
-    turn_panel = Turn_Panel()
-    white_inventory = Inventory_Frame((0, 158), white=True)
-    black_inventory = Inventory_Frame((440, 158), white=False)
+    
+    state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
 
-    running = True
+    state.start_game()
     print('about to run')
 
-    while running:
-        while True: #state.main_loop:
+    while state.running:
+        while state.main_loop: #state.main_loop:
+            new_move = 'pass'
             #update inventories and turn panel for drawing
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    #state.quit()
-                    running = False
+                    state.quit()
                     break
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_TAB:
                         tile = next(
-                            (tile for tile in client.board_tiles if tile.under_mouse(pos)), None)
+                            (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                         q,r = tile.axial_coords
                         print(q,r)
                     if event.key == pg.K_ESCAPE:
-                        #client.state.quit()
-                        running = False
+                        state.quit()
                         break
                     # if event.key == pg.K_PAGEUP:
                     #     client.state.open_popup()
                 if event.type == pg.MOUSEBUTTONDOWN:
-                    client.click()
+                    state.click()
                 if event.type == pg.MOUSEBUTTONUP:
-                    client.unclick()
+                    state.unclick()
                     
 
-                    if client.moving_piece and client.is_player_turn():
+                    if state.moving_piece and state.is_player_turn():
                         old_tile = next(
-                            tile for tile in client.board_tiles if  (tile.has_pieces() and tile.pieces[-1] == client.moving_piece))
+                            tile for tile in state.board_tiles if  (tile.has_pieces() and tile.pieces[-1] == state.moving_piece))
                         new_tile = next(
-                            (tile for tile in client.board_tiles if tile.under_mouse(pos)), None)
-                        #send old_tile, new_tile
-                        if is_valid_move(client, old_tile, new_tile): # gonna be an issue
-                            old_tile.move_piece(new_tile)
-                            client.next_turn()
+                            (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
+                        
+                        # if is_valid_move(client, old_tile, new_tile):
+                            # old_tile.move_piece(new_tile)
+                            # client.next_turn()
+
+                            # send client.state to server, for now server will just disseminate
+                        new_move = move.Move(state.turn % 2, old_tile.coords, new_tile.coords)
+                        
+
+
                             # if player_has_no_moves(client):
                             #     print('player has no moves')
                             #     client.open_popup()
 
-                    client.remove_moving_piece()
-
-                    # send client.state to server, for now server will just accept
-                    proposed_state = State(client.turn + 1, client.state.board_tiles)
-                    client.send(proposed_state)
-
+            client.send_and_update(new_move, state)       
             # only draw tiles once in a for loop
             background.fill((180, 180, 180))
-            white_inventory.draw(background, pos)
-            black_inventory.draw(background, pos)
-            
-            for tile in client.board_tiles:
-                if client.clicked:
-                    tile.draw(background, pos, client.clicked)
-                    if tile.under_mouse(pos) and client.moving_piece is None and tile.has_pieces():
-                        client.moving_piece = tile.pieces[-1]
+            state.white_inventory.draw(background, pos)
+            state.black_inventory.draw(background, pos)
+            for tile in state.board_tiles:
+                if state.clicked:
+                    tile.draw(background, pos, state.clicked)
+                    if tile.under_mouse(pos) and state.moving_piece is None and tile.has_pieces():
+                        state.add_moving_piece(tile.pieces[-1])
                 else:
                     tile.draw(background, pos)
-            if client.moving_piece:
-                draw_drag(background, pos, client.moving_piece)
-            turn_panel.draw(background, client.turn)
+            if state.moving_piece:
+                draw_drag(background, pos, state.moving_piece)
+            state.turn_panel.draw(background, state.turn)
+            # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
+            # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
             screen.blit(background, (0, 0))
             pg.display.flip()
 
