@@ -44,6 +44,11 @@ class Tile:
         self.pieces[-1].update_pos(self.coords)
         self.color = self.pieces[-1].color
 
+        print('new piece added')
+        print(type(piece))
+        print(piece.old_pos)
+        print(self.coords)
+
     def remove_piece(self):
         self.pieces.pop(-1)
         if self.has_pieces():

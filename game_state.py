@@ -95,6 +95,13 @@ class Game_State:
                 tiles.append(tile)
         return tiles
 
+
+
+
+
+
+
+
     def get_tile_by_pos(self, coords):#not axial coordinates, all of those are the same for inventory, and we need to get specific ones (pixels will be the same everywhere)
         return next(tile for tile in self.board_tiles if tile.coords == coords)
 

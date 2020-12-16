@@ -33,6 +33,8 @@ def Hive():
 
     #group these into an initialize function somewhow, so we can reinitialize when newgame is hit
     state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
+    white_inventory = Inventory_Frame((0, 158), white=True)
+    black_inventory = Inventory_Frame((440, 158), white=False)
 
     #client receives state and communicates moves
     #server checks moves, keeps track of turn and sends out updates to players (send game state)
@@ -64,6 +66,7 @@ def Hive():
                             (tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                         q,r = tile.axial_coords
                         print(q,r)
+                        print(tile.coords)
                         #print([at.pieces for at in tile.adjacent_tiles]) # -q-r third cube coord
                         #print('turn #: ' + str(state.turn))
                     if event.key == pg.K_ESCAPE:
@@ -92,8 +95,8 @@ def Hive():
 
             # only draw tiles once in a for loop
             background.fill((180, 180, 180))
-            state.white_inventory.draw(background, pos)
-            state.black_inventory.draw(background, pos)
+            white_inventory.draw(background, pos)
+            black_inventory.draw(background, pos)
             for tile in state.board_tiles:
                 if state.clicked:
                     tile.draw(background, pos, state.clicked)

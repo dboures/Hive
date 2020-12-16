@@ -8,6 +8,7 @@ from inventory_frame import Inventory_Frame
 import pickle
 import sys
 import pygame as pg
+from pieces import Queen
 
 
 pg.font.init()
@@ -23,6 +24,8 @@ init_state = Game_State(initialize_grid(HEIGHT - 200, WIDTH, radius=20))
 
 init_state.start_game()
 
+games = [init_state]
+
 try:
     s.bind((host,port))
 except socket.error as e:
@@ -31,8 +34,8 @@ except socket.error as e:
 print('Waiting for a connection .. ')
 s.listen(2)
 
-def threaded_client(conn, state):
-    conn.send(pickle.dumps('start')) #init will eventually go here
+def threaded_client(conn):
+    conn.send(pickle.dumps(games[0])) #not sure what should be sent here
     while True:
         try:
             data = pickle.loads(conn.recv(2048 * 200))
@@ -43,15 +46,38 @@ def threaded_client(conn, state):
                 pass
             elif data == "get_state":
                 print('get_state')
-                reply = state
-                conn.sendall(pickle.dumps(state))
-                print("sent state")
+                reply = games[0]
+                conn.sendall(pickle.dumps(reply))
+                print('Sent reply')
+
+            elif data == "get_board":
+                print('get_board')
+                reply = games[0].board_tiles
+                conn.sendall(pickle.dumps(reply))
+                print('Sent reply')
+
             elif type(data) is Game_State:
-                print('Received: ', data)
-                state = data
-                reply = state
-                conn.sendall(pickle.dumps(state))
-                print('Sending: ', reply)
+                print('Received game state')
+                games[0] = data
+                reply = data
+                conn.sendall(pickle.dumps(reply))
+                print('Sent reply')
+
+            elif type(data) is list: #assume its a board for now
+                print('Received game board')
+
+                for tile in data:
+                    for piece in tile.pieces:
+                        print(piece.old_pos)
+                        print(type(piece))
+                        print(tile.coords)
+                #         if type(piece) is Queen and tile.coords == (440, 380):
+                #             print('Queen in middle')
+
+                games[0].board_tiles = data
+                reply = data
+                conn.sendall(pickle.dumps(reply))
+                print('Sent reply')
         except:
             break
 
@@ -70,12 +96,10 @@ def threaded_client(conn, state):
 #             # remove(clients) 
 
 
-conn_list = []
 while True:
     conn, addr = s.accept()
-    conn_list.append(conn)
     print('Connected to:' + addr[0] +':' + str(addr[1]))
-    start_new_thread(threaded_client, (conn,init_state ))
+    start_new_thread(threaded_client, (conn,))
     current_player += 1
     print('Thread Number: ' + str(current_player))
 

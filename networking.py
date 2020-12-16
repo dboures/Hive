@@ -59,10 +59,32 @@ class Client:# need to know which player we are
     def send_state(self, state):
         try:
             self.socket.send(pickle.dumps(state))
-            print("state sending")
+            print("move sending")
             state = pickle.loads(self.socket.recv(2048 * 200))
-            print("state received")
+            print("move received")
             return state
+
+        except socket.error as e:
+            print(e)
+
+    def get_board(self):
+        try:
+            self.socket.send(pickle.dumps("get_board"))
+            print("board requested")
+            board = pickle.loads(self.socket.recv(2048 * 200))
+            print("board received")
+            return board
+
+        except socket.error as e:
+            print(e)
+
+    def send_board(self, board):
+        try:
+            self.socket.send(pickle.dumps(board))
+            print("board sent")
+            board = pickle.loads(self.socket.recv(2048 * 200))
+            print("board received")
+            return board
 
         except socket.error as e:
             print(e)

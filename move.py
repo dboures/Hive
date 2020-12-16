@@ -3,5 +3,5 @@ class Move:
         self.player = player
         self.old_coords = old_coords
         self.new_coords = new_coords
-        print('made move')
+        print('move created')
         print(old_coords, new_coords)
