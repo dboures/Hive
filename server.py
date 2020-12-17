@@ -5,9 +5,11 @@ from networking import Client
 from tile import Tile, Start_Tile, initialize_grid
 from game_state import Game_State
 from inventory_frame import Inventory_Frame
+from move_checker import is_valid_move
 import pickle
 import sys
 import pygame as pg
+import move
 from pieces import Queen
 
 
@@ -34,8 +36,8 @@ except socket.error as e:
 print('Waiting for a connection .. ')
 s.listen(2)
 
-def threaded_client(conn):
-    conn.send(pickle.dumps(games[0])) #not sure what should be sent here
+def threaded_client(conn, current_player):
+    conn.send(pickle.dumps(current_player)) #not sure what should be sent here
     while True:
         try:
             data = pickle.loads(conn.recv(2048 * 200))
@@ -50,11 +52,11 @@ def threaded_client(conn):
                 conn.sendall(pickle.dumps(reply))
                 print('Sent reply')
 
-            elif data == "get_board":
-                print('get_board')
-                reply = games[0].board_tiles
+            elif data == "get_turn_and_board":
+                # print('get_board')
+                reply = (games[0].turn ,games[0].board_tiles)
                 conn.sendall(pickle.dumps(reply))
-                print('Sent reply')
+                # print('Sent reply')
 
             elif type(data) is Game_State:
                 print('Received game state')
@@ -78,6 +80,36 @@ def threaded_client(conn):
                 reply = data
                 conn.sendall(pickle.dumps(reply))
                 print('Sent reply')
+
+            elif type(data) is move.Move: #assume its a board for now
+                print('Received move')
+                reply = False
+                playerid = data.player
+                games[0].add_moving_piece(data.piece)
+                old_coords = data.old_coords
+                new_coords = data.new_coords
+                print(playerid, old_coords, new_coords)
+
+                if games[0].player_can_move(playerid):
+                    print(str(playerid) + ' can move')
+                    old_tile = next(
+                        (tile for tile in games[0].board_tiles if tile.coords == old_coords), None)
+                    new_tile = next(
+                        (tile for tile in games[0].board_tiles if tile.coords == new_coords), None)
+                    print(old_tile, new_tile)
+                    #send old_tile, new_tile
+                    if is_valid_move(games[0], old_tile, new_tile):
+                        print('move is valid')
+                        old_tile.move_piece(new_tile)
+                        games[0].next_turn()
+                        reply = True
+                        print('reply created')
+                        # if player_has_no_moves(state):
+                        #     print('player has no moves')
+                        #     state.open_popup()
+                conn.sendall(pickle.dumps(reply))
+                print('Sent reply')
+                games[0].remove_moving_piece() # clunky but hope it works
         except:
             break
 
@@ -99,7 +131,7 @@ def threaded_client(conn):
 while True:
     conn, addr = s.accept()
     print('Connected to:' + addr[0] +':' + str(addr[1]))
-    start_new_thread(threaded_client, (conn,))
+    start_new_thread(threaded_client, (conn,current_player % 2)) #figure out a way to group players
     current_player += 1
     print('Thread Number: ' + str(current_player))
 

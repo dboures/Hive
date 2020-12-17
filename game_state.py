@@ -77,10 +77,18 @@ class Game_State:
     def next_turn(self):
         self.turn += 1
 
-    def is_player_turn(self):
+    def is_player_turn(self): #only keeping it around for the old version, should go soon
         if self.moving_piece.color == (250, 250, 250) and self.turn % 2 == 1:
             return True
         elif self.moving_piece.color == (71, 71, 71) and self.turn % 2 == 0:
+            return True
+        else:
+            return False
+
+    def player_can_move(self, playerid):
+        if playerid == 0 and self.turn % 2 == 1 and self.moving_piece.color == (250, 250, 250): # player can only move their color on their turn
+            return True
+        elif playerid == 1 and self.turn % 2 == 0 and self.moving_piece.color == (71, 71, 71):
             return True
         else:
             return False
@@ -96,14 +104,3 @@ class Game_State:
         return tiles
 
 
-
-
-
-
-
-
-    def get_tile_by_pos(self, coords):#not axial coordinates, all of those are the same for inventory, and we need to get specific ones (pixels will be the same everywhere)
-        return next(tile for tile in self.board_tiles if tile.coords == coords)
-
-    def get_board(self):
-        return self.board_tiles

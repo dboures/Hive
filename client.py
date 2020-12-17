@@ -56,7 +56,7 @@ def main():
     while True:
         state = client.get_state()
         while state.main_loop: #state.main_loop:
-            board_tiles = client.get_board()
+            turn, board_tiles = client.get_turn_and_board()
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -77,23 +77,16 @@ def main():
                     clicked=True
                 if event.type == pg.MOUSEBUTTONUP:
                     clicked=False
-
-
-                    if state.moving_piece and state.is_player_turn():
-                        old_tile = next(
-                            tile for tile in board_tiles if  (tile.has_pieces() and tile.pieces[-1].old_pos == state.moving_piece.old_pos)) # differnet object bc one comes from the server
-                        new_tile = next(
-                            (tile for tile in board_tiles if tile.under_mouse(pos)), None)
-                        #send old_tile, new_tile
-                        if is_valid_move(state, old_tile, new_tile):
-                            old_tile.move_piece(new_tile)
-                            state.next_turn()
-                            # if player_has_no_moves(state):
-                            #     print('player has no moves')
-                            #     state.open_popup()
-
+                    if state.moving_piece:
+                        old_coords = next(
+                            tile.coords for tile in board_tiles if  (tile.has_pieces() and tile.pieces[-1].old_pos == state.moving_piece.old_pos)) # have to use pixel coords bc one cbject comes from server and is always diff, and inv tiles have same ax coords
+                        new_coords = next(
+                            (tile.coords for tile in board_tiles if tile.under_mouse(pos)), None)
+                        print(client.player)
+                        proposed_move = move.Move(client.player, state.moving_piece, old_coords, new_coords)
+                        client.send_move(proposed_move)
+                        
                     state.remove_moving_piece()
-                    client.send_board(board_tiles)
        
             # only draw tiles once in a for loop
             background.fill((180, 180, 180))
@@ -108,7 +101,7 @@ def main():
                     tile.draw(background, pos)
             if state.moving_piece:
                 draw_drag(background, pos, state.moving_piece)
-            state.turn_panel.draw(background, state.turn)
+            state.turn_panel.draw(background, turn) # turn comes from the server
             # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
             # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
             screen.blit(background, (0, 0))
