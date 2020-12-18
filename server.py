@@ -113,21 +113,6 @@ def threaded_client(conn, current_player):
         except:
             break
 
-# """Using the below function, we broadcast the message to all  
-# clients who's object is not the same as the one sending  
-# the message """
-# def broadcast_move(data):  
-#     for conn in conn_list: 
-#         try:
-#             print('Broadcasting: ', data)  
-#             conn.sendall(pickle.dumps(data))  
-#         except:  
-#             print('broadcast error')
-#             # clients.close()  
-#             # # if the link is broken, we remove the client  
-#             # remove(clients) 
-
-
 while True:
     conn, addr = s.accept()
     print('Connected to:' + addr[0] +':' + str(addr[1]))
@@ -136,29 +121,3 @@ while True:
     print('Thread Number: ' + str(current_player))
 
 s.close()
-
-
-
-
-
-# clients = set()
-# clients_lock = threading.Lock()
-
-# def listener(client, address):
-#     print "Accepted connection from: ", address
-#     with clients_lock:
-#         clients.add(client)
-#     try:    
-#         while True:
-#             data = client.recv(1024)
-#             if not data:
-#                 break
-#             else:
-#                 print repr(data)
-#                 with clients_lock:
-#                     for c in clients:
-#                         c.sendall(data)
-#     finally:
-#         with clients_lock:
-#             clients.remove(client)
-#             client.close()

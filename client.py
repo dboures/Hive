@@ -47,8 +47,8 @@ def main():
     client = Client()
 
     #gotta think about these tiles
-    white_inventory = Inventory_Frame((0, 158), white=True)
-    black_inventory = Inventory_Frame((440, 158), white=False)
+    white_inventory = Inventory_Frame((0, 158), client.player, white=True)
+    black_inventory = Inventory_Frame((440, 158), client.player, white=False)
     
     print('about to run')
 
@@ -101,7 +101,7 @@ def main():
                     tile.draw(background, pos)
             if state.moving_piece:
                 draw_drag(background, pos, state.moving_piece)
-            state.turn_panel.draw(background, turn) # turn comes from the server
+            state.turn_panel.draw(background, turn, client.player) # turn comes from the server
             # pg.draw.circle(background, (1, 250, 1), (440, 380), 6)
             # pg.draw.circle(background, (1, 250, 1), (0, 380), 6)
             screen.blit(background, (0, 0))

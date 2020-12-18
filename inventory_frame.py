@@ -8,11 +8,10 @@ WHITE = (250, 250, 250)
 
 # white is on the left
 class Inventory_Frame:
-    def __init__(self, pos, white=True):
+    def __init__(self, pos, player, white=True):
         WIDTH, HEIGHT = 880, 900
         left = pos[0]
         top = HEIGHT - pos[1]
-        self.white = white
 
         inventory_width = WIDTH / 2
         inventory_height = 160
@@ -76,12 +75,12 @@ class Inventory_Frame:
                 piece.update_pos(tile.coords)
 
         FONT = pg.font.SysFont("Times New Norman", 24)
-        if self.white:
+        if (player == 0 and white) or (player == 1 and not white):
             self.font = FONT.render(
-                'Player 1 Inventory', True, (255, 255, 255))
+                'Your Inventory', True, (255, 255, 255))
         else:
             self.font = FONT.render(
-                'Player 2 Inventory', True, (255, 255, 255))
+                'Opponent Inventory', True, (255, 255, 255))
         self.title_rect = self.font.get_rect(center=(
             inner_left + inner_width/2, inner_top + title_height/2))
 

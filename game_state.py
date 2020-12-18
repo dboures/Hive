@@ -13,8 +13,8 @@ class Game_State:
         self.play_new_game = False
         self.move_popup_loop = False
         #board 
-        white_inventory = Inventory_Frame((0, 158), white=True)
-        black_inventory = Inventory_Frame((440, 158), white=False)
+        white_inventory = Inventory_Frame((0, 158), 0, white=True)
+        black_inventory = Inventory_Frame((440, 158), 1, white=False)
         self.board_tiles = tiles + white_inventory.tiles + black_inventory.tiles
 
         self.turn_panel = Turn_Panel() # can optimize pickling and sending by removing this

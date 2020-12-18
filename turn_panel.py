@@ -24,14 +24,14 @@ class Turn_Panel: #Once we get a client, want to remind players what color they 
         self.inner_panel = pg.Rect(
             self.inner_left, self.inner_top, self.inner_width, self.inner_height)
 
-    def draw(self, background, turn):
+    def draw(self, background, turn, player):
         FONT = pg.font.SysFont("Times New Norman", 32)
-        if turn % 2 == 1:
+        if (turn - 1) % 2 == player: # turn starts at 1
             font = FONT.render(
-                'Player 1 Turn:', True, (255, 255, 255))
+                'Your Turn:', True, (255, 255, 255))
         else:
             font = FONT.render(
-                'Player 2 Turn:', True, (255, 255, 255))
+                'Opponent Turn:', True, (255, 255, 255))
         title_rect = font.get_rect(center=(
             self.inner_left + self.inner_width * (2/5), self.inner_top + self.inner_height/2))
 
@@ -39,7 +39,7 @@ class Turn_Panel: #Once we get a client, want to remind players what color they 
         pg.draw.rect(background, (1, 1, 1), self.back_panel)
         pg.draw.rect(background, (55, 55, 55), self.inner_panel)
 
-        if turn % 2 == 1:#don't like that we check twice
+        if turn % 2 == 1:
             pg.draw.circle(background, (250, 250, 250), (self.inner_left + self.inner_width * (7/8), self.inner_top + self.inner_height/2), 13)
         else:
             pg.draw.circle(background, (1, 1, 1), (self.inner_left + self.inner_width * (7/8), self.inner_top + self.inner_height/2), 13)
