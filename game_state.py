@@ -1,29 +1,42 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from tile import Inventory_Tile
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
+from settings import PIECE_WHITE, PIECE_BLACK
+
 
 class Game_State:
-    def __init__(self, tiles = [], white_inventory=None, black_inventory=None):
-        #state attributes
+
+    def __init__(self, tiles=[], white_inventory=None, black_inventory=None):
+
+        # state attributes
+
         self.running = True
         self.menu_loop = True
         self.main_loop = False
         self.end_loop = False
         self.play_new_game = False
         self.move_popup_loop = False
-        #board 
+
+        # board
+
         white_inventory = Inventory_Frame((0, 158), 0, white=True)
         black_inventory = Inventory_Frame((440, 158), 1, white=False)
-        self.board_tiles = tiles + white_inventory.tiles + black_inventory.tiles
+        self.board_tiles = tiles + white_inventory.tiles \
+            + black_inventory.tiles
 
-        self.turn_panel = Turn_Panel() # can optimize pickling and sending by removing this
+        self.turn_panel = Turn_Panel()
 
-        #action attributes
+        # action attributes
+
         self.clicked = False
         self.moving_piece = None
         self.turn = 1
-        #other
+
+        # other
+
         self.winner = None
 
     def start_game(self):
@@ -45,7 +58,7 @@ class Game_State:
         self.menu_loop = False
         self.main_loop = False
         self.end_loop = False
-    
+
     def play_again(self):
         self.play_new_game = True
         self.quit()
@@ -67,32 +80,26 @@ class Game_State:
 
     def click(self):
         self.clicked = True
-    
+
     def unclick(self):
         self.clicked = False
 
     def add_tiles(self, tiles):
-        self.tiles = self.board_tiles.extend(tiles) 
-    
+        self.tiles = self.board_tiles.extend(tiles)
+
     def next_turn(self):
         self.turn += 1
 
-    def is_player_turn(self): #only keeping it around for the old version, should go soon
-        if self.moving_piece.color == (250, 250, 250) and self.turn % 2 == 1:
+    def is_player_turn(self):
+        if self.moving_piece.color == PIECE_WHITE and self.turn % 2 \
+            == 1:
             return True
-        elif self.moving_piece.color == (71, 71, 71) and self.turn % 2 == 0:
+        elif self.moving_piece.color == PIECE_BLACK and self.turn % 2 \
+            == 0:
             return True
         else:
             return False
 
-    def player_can_move(self, playerid):
-        if playerid == 0 and self.turn % 2 == 1 and self.moving_piece.color == (250, 250, 250): # player can only move their color on their turn
-            return True
-        elif playerid == 1 and self.turn % 2 == 0 and self.moving_piece.color == (71, 71, 71):
-            return True
-        else:
-            return False
-    
     def get_tiles_with_pieces(self, include_inventory=False):
         tiles = []
         for tile in self.board_tiles:
@@ -102,5 +109,3 @@ class Game_State:
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
-
-

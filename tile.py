@@ -1,12 +1,13 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import numpy as np
 import pygame as pg
-import statistics
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
-
-WHITE = (250, 250, 250)
+from settings import WHITE, RED, BLUE
 
 
 class Tile:
+
     def __init__(self, coord_pair, axial_coords, radius, color, piece=None):
         self.coords = coord_pair
         self.axial_coords = axial_coords
@@ -21,12 +22,11 @@ class Tile:
             self.pieces = []
 
     def draw(self, surface, pos, clicked=False):
-        # if mouse, determine select or click then draw
         if self.under_mouse(pos):
             if clicked:
-                pg.draw.polygon(surface, (250, 1, 1), self.hex)
+                pg.draw.polygon(surface, RED, self.hex)
             else:
-                pg.draw.polygon(surface, (250, 1, 1), self.hex_select)
+                pg.draw.polygon(surface, RED, self.hex_select)
                 pg.draw.polygon(surface, self.color, self.hex)
         else:
             pg.draw.polygon(surface, self.color, self.hex)
@@ -43,11 +43,6 @@ class Tile:
         self.pieces.append(piece)
         self.pieces[-1].update_pos(self.coords)
         self.color = self.pieces[-1].color
-
-        print('new piece added')
-        print(type(piece))
-        print(piece.old_pos)
-        print(self.coords)
 
     def remove_piece(self):
         self.pieces.pop(-1)
@@ -75,40 +70,45 @@ class Tile:
         for tile in self.adjacent_tiles:
             if tile.has_pieces():
                 return True
-        print('Hive Adjacency')
         return False
 
-    def set_adjacent_tiles(self, board_tiles): # tiles don't move, only pieces do
-        q,r = self.axial_coords
+    def set_adjacent_tiles(self, board_tiles):  # tiles don't move, only pieces do
+        (q, r) = self.axial_coords
         adjacent_tiles = []
-        #print([(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)])
-        #print(self.axial_coords)
         for tile in board_tiles:
-            if tile.axial_coords in [(q, r - 1), (q + 1, r - 1), (q + 1, r), (q, r + 1), (q - 1, r + 1), (q - 1, r)]:
+            if tile.axial_coords in [
+                (q, r - 1),
+                (q + 1, r - 1),
+                (q + 1, r),
+                (q, r + 1),
+                (q - 1, r + 1),
+                (q - 1, r),
+                ]:
                 adjacent_tiles.append(tile)
 
         self.adjacent_tiles = adjacent_tiles
 
 
-
-
-
 class Inventory_Tile(Tile):
+
     def __init__(self, coord_pair, axial_coords, radius, color, piece):
         super().__init__(coord_pair, axial_coords, radius, color, piece)
 
+
 class Start_Tile(Tile):
+
     def __init__(self, coord_pair, axial_coords, radius, color, piece):
-        super().__init__(coord_pair, axial_coords, radius, (1,1,250), piece)
+        super().__init__(coord_pair, axial_coords, radius, BLUE, piece)
+
 
 def distance(pair_one, pair_two):
-    x1, y1 = pair_one
-    x2, y2 = pair_two
-    return np.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)))
+    (x1, y1) = pair_one
+    (x2, y2) = pair_two
+    return np.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 
 
 def get_hex_points(coord_pair, radius):
-    x, y = coord_pair
+    (x, y) = coord_pair
 
     return (  # has to be in counterclockwise order for drawing
         (x, y + radius),  # top
@@ -120,25 +120,41 @@ def get_hex_points(coord_pair, radius):
     )
 
 
-def initialize_grid(height, width, radius): #as far as intuitiveness goes, this function is a mess
-    hex_radius = radius  # move this somewhere?
-    # How is this 6 determined?
-    pixel_y = list(range(height + hex_radius, 0, -2 * (hex_radius) + 6))
+def initialize_grid(height, width, radius):
+    hex_radius = radius
+
+    # location of the tiles in pygame/cartesian pixels
+
+    pixel_y = list(range(height + hex_radius, 0, -2 * hex_radius + 6))
     pixel_x = list(range(0, width + hex_radius, 2 * hex_radius))
-    axial_r = list(range((len(pixel_y) // 2) - 1, -(1 * len(pixel_y) // 2) - 1, -1))
+
+    # axial hexagonal coordinates used for move finding
+
+    axial_r = list(range(len(pixel_y) // 2 - 1, -(1 * len(pixel_y)
+                   // 2) - 1, -1))
     odd_y = pixel_y[1::2]
     tiles = []
     for j in range(0, len(pixel_y)):
-        for k in range(0,len(pixel_x)):
+        for k in range(0, len(pixel_x)):
             if pixel_y[j] in odd_y:
-                tiles.append(Tile((pixel_x[k] + hex_radius, pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE))
+                tiles.append(Tile((pixel_x[k] + hex_radius,
+                             pixel_y[j]), ((j + 1) // 2 + k - 16,
+                             axial_r[j]), hex_radius + 1, WHITE))
             else:
-                if pixel_x[k] == 440 and pixel_y[j] == 380: #middle tile
-                    tiles.append(Start_Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE, None))
+                if pixel_x[k] == 440 and pixel_y[j] == 380:  # middle tile
+                    tiles.append(Start_Tile((pixel_x[k], pixel_y[j]),
+                                 ((j + 1) // 2 + k - 16, axial_r[j]),
+                                 hex_radius + 1, WHITE, None))
                 else:
-                    tiles.append(Tile((pixel_x[k], pixel_y[j]), (((j + 1) // 2) + k - 16, axial_r[j]), hex_radius + 1, WHITE))
+                    tiles.append(Tile((pixel_x[k], pixel_y[j]), ((j
+                                 + 1) // 2 + k - 16, axial_r[j]),
+                                 hex_radius + 1, WHITE))
 
     for tile in tiles:
         tile.set_adjacent_tiles(tiles)
-    
+
     return tiles
+
+
+def draw_drag(background, pos, piece=None):
+    pg.draw.line(background, pg.Color('red'), pos, piece.old_pos)
